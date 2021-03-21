@@ -3,11 +3,14 @@ package main
 import (
 	"net/http"
 
+	"github.com/MisakiFx/martin/pkg/connection"
+
 	"github.com/gin-gonic/gin"
 )
 
 func Init() {
 	//tools.Init()
+	connection.Init()
 }
 
 func main() {
