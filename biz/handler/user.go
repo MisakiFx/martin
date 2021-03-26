@@ -2,9 +2,10 @@ package handler
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"unicode/utf8"
+
+	"github.com/MisakiFx/martin/pkg/tools"
 
 	"github.com/MisakiFx/martin/pkg/service"
 
@@ -50,16 +51,20 @@ func checkLoginReq(req *model.LoginReq) error {
 	if req.UserPower != constant.UserPowerNormal && req.UserPower != constant.UserPowerAdmin {
 		return errors.New("用户权限不合法")
 	}
+
+	if req.VerificationCode == "" {
+		return errors.New("请输入验证码")
+	}
 	return nil
 }
 
 func UserLogin(c *gin.Context) {
-	log.Printf("handler.UserLogin url : %v", c.Request.URL.String())
+	tools.GetLogger().Infof("handler.UserLogin url : %v", c.Request.URL.String())
 
 	var loginReq model.LoginReq
 	err := c.ShouldBindJSON(&loginReq)
 	if err != nil {
-		log.Printf("handler.UserLogin bind json error : %v", err)
+		tools.GetLogger().Errorf("handler.UserLogin bind json error : %v", err)
 		c.JSON(http.StatusOK, gin.H{
 			"code": constant.StatusCodeInputError,
 			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
@@ -68,12 +73,53 @@ func UserLogin(c *gin.Context) {
 	}
 	err = checkLoginReq(&loginReq)
 	if err != nil {
-		log.Printf("handler.UserLogin check input error : %v", err)
+		tools.GetLogger().Errorf("handler.UserLogin check input error : %v", err)
 		c.JSON(http.StatusOK, gin.H{
 			"code": constant.StatusCodeInputError,
 			"msg":  err,
 		})
 		return
 	}
-	_, err = service.UserLoginService(&loginReq)
+	statusCode, id, err := service.UserLoginService(&loginReq)
+	if statusCode != constant.StatusCodeSuccess {
+		tools.GetLogger().Errorf("handler.UserLogin->service.UserLoginService error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": statusCode,
+			"msg":  err,
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+		"data": gin.H{
+			"id": id,
+		},
+	})
+}
+
+func VerificationCode(c *gin.Context) {
+	tools.GetLogger().Infof("handler.VerificationCode url : %v", c.Request.URL.String())
+	phoneNumber := c.DefaultQuery("phone", "")
+	if phoneNumber == "" {
+		tools.GetLogger().Errorf("handler.VerificationCode phone is empty : %v", phoneNumber)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	err := service.LoginVerificationCode(phoneNumber)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.UserLogin->service.UserLoginService error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeServiceError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeServiceError],
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+	})
 }

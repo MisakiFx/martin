@@ -15,5 +15,6 @@ func customizeRegister(r *gin.Engine) {
 	api := r.Group("/guardian/api")
 	{
 		api.POST("/login", handler.UserLogin)
+		api.GET("/login/verification_code", handler.VerificationCode)
 	}
 }

@@ -10,6 +10,8 @@ import (
 	"sort"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/MisakiFx/martin/pkg/model"
 
 	"github.com/MisakiFx/martin/pkg/constant"
@@ -58,4 +60,8 @@ func GenId() int64 {
 	rand.Seed(time.Now().UnixNano())
 	randMath := rand.Int63n(1000000)
 	return timeNow*1000000 + randMath
+}
+
+func GetLogger() *zap.SugaredLogger {
+	return sugarLogger
 }
