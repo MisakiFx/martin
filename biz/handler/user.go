@@ -15,7 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func checkLoginReq(req *model.LoginReq) error {
+func checkUserReq(req *model.UserReq, isUpdate bool) error {
 	if req == nil {
 		return errors.New("入参错误")
 	}
@@ -45,11 +45,13 @@ func checkLoginReq(req *model.LoginReq) error {
 		return errors.New("用户性别不合法")
 	}
 
-	if req.UserPower == 0 {
-		return errors.New("用户权限不能为空")
-	}
-	if req.UserPower != constant.UserPowerNormal && req.UserPower != constant.UserPowerAdmin {
-		return errors.New("用户权限不合法")
+	if !isUpdate {
+		if req.UserPower == 0 {
+			return errors.New("用户权限不能为空")
+		}
+		if req.UserPower != constant.UserPowerNormal && req.UserPower != constant.UserPowerAdmin {
+			return errors.New("用户权限不合法")
+		}
 	}
 
 	if req.VerificationCode == "" {
@@ -61,7 +63,7 @@ func checkLoginReq(req *model.LoginReq) error {
 func UserLogin(c *gin.Context) {
 	tools.GetLogger().Infof("handler.UserLogin url : %v", c.Request.URL.String())
 
-	var loginReq model.LoginReq
+	var loginReq model.UserReq
 	err := c.ShouldBindJSON(&loginReq)
 	if err != nil {
 		tools.GetLogger().Errorf("handler.UserLogin bind json error : %v", err)
@@ -71,12 +73,12 @@ func UserLogin(c *gin.Context) {
 		})
 		return
 	}
-	err = checkLoginReq(&loginReq)
+	err = checkUserReq(&loginReq, false)
 	if err != nil {
 		tools.GetLogger().Errorf("handler.UserLogin check input error : %v", err)
 		c.JSON(http.StatusOK, gin.H{
 			"code": constant.StatusCodeInputError,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -85,7 +87,7 @@ func UserLogin(c *gin.Context) {
 		tools.GetLogger().Errorf("handler.UserLogin->service.UserLoginService error : %v", err)
 		c.JSON(http.StatusOK, gin.H{
 			"code": statusCode,
-			"msg":  err,
+			"msg":  err.Error(),
 		})
 		return
 	}
@@ -115,6 +117,112 @@ func VerificationCode(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"code": constant.StatusCodeServiceError,
 			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeServiceError],
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+	})
+}
+
+func GetUserInfo(c *gin.Context) {
+	tools.GetLogger().Infof("handler.GetUserInfo url : %v", c.Request.URL.String())
+	openIdInterface, ok := c.Get(constant.UserOpenIdContextKey)
+	openId, ok2 := openIdInterface.(string)
+	if !ok || !ok2 || openId == "" {
+		tools.GetLogger().Errorf("handler.GetUserInfo get user info from context error")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeAuthError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeAuthError],
+		})
+		return
+	}
+	userInfo, err := service.GetUserInfo(openId)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.GetUserInfo->service.GetUserInfo error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeServiceError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeServiceError],
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+		"data": gin.H{
+			"info": userInfo,
+		},
+	})
+}
+
+func GetUserOpenIdByCode(c *gin.Context) {
+	tools.GetLogger().Infof("handler.GetUserOpenIdByCode url : %v", c.Request.URL.String())
+	code := c.Param("code")
+	if code == "" {
+		tools.GetLogger().Errorf("handler.GetUserOpenIdByCode code is empty : %v", code)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	openId, err := service.GetUserOpenIdByCode(code)
+	if err != nil {
+		tools.GetLogger().Errorf("hendler.GetUserOpenIdByCode->service.GetUserOpenIdByCode error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeServiceError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeServiceError],
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+		"data": gin.H{
+			"open_id": openId,
+		},
+	})
+}
+
+func UpdateUserInfo(c *gin.Context) {
+	tools.GetLogger().Infof("handler.UpdateUserInfo url : %v", c.Request.URL.String())
+	var req model.UserReq
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.UpdateUserInfo bind model err : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	openIdInterface, ok := c.Get(constant.UserOpenIdContextKey)
+	openId, ok2 := openIdInterface.(string)
+	if !ok || !ok2 || openId == "" {
+		tools.GetLogger().Errorf("handler.UpdateUserInfo get user info from context error")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeAuthError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeAuthError],
+		})
+		return
+	}
+	req.OpenId = openId
+	err = checkUserReq(&req, true)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.UpdateUserInfo check input error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	statusCode, err := service.UpdateUserBaseInfo(&req)
+	if statusCode != constant.StatusCodeSuccess {
+		tools.GetLogger().Errorf("handler.UpdateUserInfo->service.UpdateUserBaseInfo error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": statusCode,
+			"msg":  err.Error(),
 		})
 		return
 	}

@@ -13,8 +13,12 @@ func customizeRegister(r *gin.Engine) {
 	r.POST("/", middleware.CheckToken, handler.ServicePost)
 
 	api := r.Group("/guardian/api")
+	user := api.Group("user")
 	{
-		api.POST("/login", handler.UserLogin)
-		api.GET("/login/verification_code", handler.VerificationCode)
+		user.POST("/login", handler.UserLogin)
+		user.GET("/login/verification_code", handler.VerificationCode)
+		user.GET("/open_id/:code", handler.GetUserOpenIdByCode)
+		user.GET("/info/:open_id", middleware.Auth, handler.GetUserInfo)
+		user.POST("/user/update", middleware.Auth, handler.UpdateUserInfo)
 	}
 }

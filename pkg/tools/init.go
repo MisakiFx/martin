@@ -5,6 +5,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/MisakiFx/martin/pkg/dependencies"
+
 	"go.uber.org/zap/zapcore"
 
 	"go.uber.org/zap"
@@ -18,7 +20,7 @@ var sugarLogger *zap.SugaredLogger
 
 func getAccessTokenInit() {
 	ticker := time.NewTicker(time.Minute * 110)
-	accessToken, err := GetAccessToken()
+	accessToken, err := dependencies.GetAccessToken()
 	if err != nil {
 		GetLogger().Infof("Init accessToken error : %v", err)
 		debug.PrintStack()
@@ -27,7 +29,7 @@ func getAccessTokenInit() {
 	AccessToken = accessToken
 	for {
 		<-ticker.C
-		accessToken, err := GetAccessToken()
+		accessToken, err := dependencies.GetAccessToken()
 		if err != nil {
 			GetLogger().Errorf("Init accessToken error : %v", err)
 			continue

@@ -18,3 +18,5 @@ const (
 	UserPowerNormal = 1
 	UserPowerAdmin  = 2
 )
+
+const UserOpenIdContextKey = "openId"

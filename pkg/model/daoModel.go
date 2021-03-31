@@ -12,3 +12,7 @@ type GuardianUserInfo struct {
 	CreateTime  time.Time `gorm:"column:create_time" json:"create_time" form:"create_time"`
 	UpdateTime  time.Time `gorm:"column:update_time" json:"update_time" form:"update_time"`
 }
+
+func (g *GuardianUserInfo) TableName() string {
+	return "guardian_user_info"
+}

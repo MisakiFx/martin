@@ -5,6 +5,7 @@ const (
 	StatusCodeTokenCheckError = -1
 	StatusCodeServiceError    = -2
 	StatusCodeInputError      = -3
+	StatusCodeAuthError       = -4
 )
 
 const (
@@ -12,6 +13,7 @@ const (
 	CodeMessageTokenCheckError = "token校验失败"
 	CodeMessageServiceError    = "服务器内部错误"
 	CodeMessageInputError      = "输入不合法"
+	CodeMessageAuthError       = "无法识别用户信息"
 )
 
 var StatusCodeMessageMap = map[int]string{
@@ -19,4 +21,5 @@ var StatusCodeMessageMap = map[int]string{
 	StatusCodeTokenCheckError: CodeMessageTokenCheckError,
 	StatusCodeServiceError:    CodeMessageServiceError,
 	StatusCodeInputError:      CodeMessageInputError,
+	StatusCodeAuthError:       CodeMessageAuthError,
 }

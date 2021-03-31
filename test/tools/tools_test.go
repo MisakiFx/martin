@@ -9,16 +9,6 @@ import (
 	"github.com/MisakiFx/martin/pkg/tools"
 )
 
-func TestGetAccessToken(t *testing.T) {
-	accessToken, err := tools.GetAccessToken()
-	if err != nil {
-		log.Fatalf("tools.GetAccessToken error : %v", err)
-		return
-	}
-	log.Printf("accessToken : %v", accessToken)
-	time.Sleep(time.Second)
-}
-
 func TestSomeFunc(t *testing.T) {
 	ch := make(chan int, 2)
 	ch <- 1

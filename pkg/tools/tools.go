@@ -2,17 +2,12 @@ package tools
 
 import (
 	"crypto/sha1"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
-	"net/http"
 	"sort"
 	"time"
 
 	"go.uber.org/zap"
-
-	"github.com/MisakiFx/martin/pkg/model"
 
 	"github.com/MisakiFx/martin/pkg/constant"
 )
@@ -35,24 +30,6 @@ func CheckToken(signature, timestamp, nonce string) bool {
 		return false
 	}
 	return true
-}
-
-func GetAccessToken() (string, error) {
-	resp, err := http.Get(fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%v&secret=%v", constant.AppID, constant.Appsecret))
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	var accessTokenRes model.AccessToken
-	err = json.Unmarshal(body, &accessTokenRes)
-	if err != nil {
-		return "", err
-	}
-	return accessTokenRes.AccessToken, nil
 }
 
 func GenId() int64 {
