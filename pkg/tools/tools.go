@@ -42,3 +42,9 @@ func GenId() int64 {
 func GetLogger() *zap.SugaredLogger {
 	return sugarLogger
 }
+
+func PhoneNumberDesensitization(phoneNumber string) string {
+	prefix := phoneNumber[:3]
+	suffix := phoneNumber[7:]
+	return prefix + "xxxx" + suffix
+}

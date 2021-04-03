@@ -18,7 +18,11 @@ func customizeRegister(r *gin.Engine) {
 		user.POST("/login", handler.UserLogin)
 		user.GET("/login/verification_code", handler.VerificationCode)
 		user.GET("/open_id/:code", handler.GetUserOpenIdByCode)
-		user.GET("/info/:open_id", middleware.Auth, handler.GetUserInfo)
+		user.GET("/info", middleware.Auth, handler.GetUserInfo)
 		user.POST("/user/update", middleware.Auth, handler.UpdateUserInfo)
+	}
+	examination := api.Group("examination")
+	{
+		examination.POST("/buy", middleware.Auth, handler.BuyExamination)
 	}
 }

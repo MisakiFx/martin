@@ -15,3 +15,7 @@ type GetUserInfoResp struct {
 	PhoneNumber string `json:"phone_number"`
 	UserGender  int    `json:"user_gender"`
 }
+
+type BuyExaminationReq struct {
+	ExaminationId int `json:"examination_id"`
+}

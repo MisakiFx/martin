@@ -29,7 +29,7 @@ func GetUserInfo(openId string) (*model.GetUserInfoResp, error) {
 	return &model.GetUserInfoResp{
 		OpenId:      userInfo.OpenId,
 		UserName:    userInfo.UserName,
-		PhoneNumber: userInfo.PhoneNumber,
+		PhoneNumber: tools.PhoneNumberDesensitization(userInfo.PhoneNumber),
 		UserGender:  userInfo.UserGender,
 	}, nil
 }
@@ -61,8 +61,10 @@ func UserLoginService(req *model.UserReq) (int, int64, error) {
 	}
 
 	//落库
+	tx := dao.StartTransaction()
+	defer dao.ShutDownTransaction(tx)
 	id := tools.GenId()
-	err = dao.CreateUser(&model.GuardianUserInfo{
+	err = dao.CreateUser(tx, &model.GuardianUserInfo{
 		ID:          id,
 		OpenId:      req.OpenId,
 		UserName:    req.UserName,
@@ -73,6 +75,7 @@ func UserLoginService(req *model.UserReq) (int, int64, error) {
 		UpdateTime:  time.Now(),
 	})
 	if err != nil {
+		tx.Rollback()
 		if strings.Contains(err.Error(), "uniq_idx_open_id") {
 			tools.GetLogger().Warnf("service.UserLoginService : 当前用户已经绑定过基本信息，无需再次绑定")
 			return constant.StatusCodeInputError, 0, errors.New("当前用户已经绑定过基本信息，无需再次绑定")
@@ -84,6 +87,21 @@ func UserLoginService(req *model.UserReq) (int, int64, error) {
 			return constant.StatusCodeServiceError, 0, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 		}
 	}
+	err = dao.CreateUserExamination(tx, &model.GuardianHealthExaminationInfo{
+		ID:             tools.GenId(),
+		UserId:         id,
+		UserCheckCount: 0,
+		UserRemainder:  0,
+		UserCardType:   0,
+		CreateTime:     time.Now(),
+		UpdateTime:     time.Now(),
+	})
+	if err != nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.UserLoginService->dao.CreateUserExamination error : %v", err)
+		return constant.StatusCodeServiceError, 0, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	tx.Commit()
 	return constant.StatusCodeSuccess, id, nil
 }
 
