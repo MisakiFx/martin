@@ -22,6 +22,6 @@ const (
 const UserOpenIdContextKey = "openId"
 
 const (
-	ExpenseStatusCost = 1
-	ExpenseStatusBack = 2
+	ExpenseStatusCost   = 1
+	ExpenseStatusRefund = 2
 )

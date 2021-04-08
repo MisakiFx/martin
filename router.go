@@ -24,5 +24,11 @@ func customizeRegister(r *gin.Engine) {
 	examination := api.Group("examination")
 	{
 		examination.POST("/buy", middleware.Auth, handler.BuyExamination)
+		examination.POST("/refund", middleware.Auth, handler.RefundExamination)
+		examination.GET("/info", middleware.Auth, handler.GetExaminationInfo)
+	}
+	calendar := api.Group("calendar")
+	{
+		calendar.GET("/list", middleware.Auth, handler.ListExpenseCalendar)
 	}
 }
