@@ -18,5 +18,5 @@ func Init() {
 }
 
 func GetMysqlClient() *gorm.DB {
-	return mysqlClient
+	return mysqlClient.Debug()
 }

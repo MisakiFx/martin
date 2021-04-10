@@ -22,7 +22,7 @@ func BuyExaminationService(req *model.BuyExaminationReq, openId string) (int, er
 		tools.GetLogger().Errorf("service.BuyExaminationService user not found")
 		return constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
 	}
-	examinationOld, err := dao.GetUserExamination(userInfo.ID)
+	examinationOld, err := dao.GetUserExamination(nil, userInfo.ID)
 	if err != nil {
 		tools.GetLogger().Errorf("service.BuyExaminationService->dao.GetUserExamination error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
@@ -31,17 +31,22 @@ func BuyExaminationService(req *model.BuyExaminationReq, openId string) (int, er
 	tx := dao.StartTransaction()
 	defer dao.ShutDownTransaction(tx)
 	//更新用户体检卡信息
-	err = dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
+	effectRows, err := dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
 		UserId:         userInfo.ID,
 		UserCheckCount: examinationOld.UserCheckCount + examination.CheckCount,
 		UserRemainder:  examinationOld.UserRemainder + examination.Remainder,
 		UserCardType:   examination.CardType,
-		UpdateTime:     time.Now(),
+		UpdateTime:     examinationOld.UpdateTime,
 	}, userInfo.ID)
 	if err != nil {
 		tx.Rollback()
 		tools.GetLogger().Errorf("service.BuyExaminationService->dao.CreateUserExamination error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if effectRows == 0 {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.BuyExaminationService->dao.CreateUserExamination effect rows = 0")
+		return constant.StatusCodeInputError, errors.New("操作太频繁,请稍后重试")
 	}
 	//插入消费记录
 	err = dao.CreateExpenseCalendar(tx, &model.GuardianExpenseCalendar{
@@ -71,7 +76,7 @@ func GetExaminationInfoService(openId string) (*model.GetExaminationInfoResp, in
 		tools.GetLogger().Errorf("service.BuyExaminationService user not found")
 		return nil, constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
 	}
-	examination, err := dao.GetUserExamination(userInfo.ID)
+	examination, err := dao.GetUserExamination(nil, userInfo.ID)
 	if err != nil {
 		tools.GetLogger().Errorf("service.BuyExaminationService->dao.GetUserExamination error : %v", err)
 		return nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
@@ -94,7 +99,9 @@ func RefundExaminationService(req *model.RefundExamination, openId string) (int,
 		tools.GetLogger().Errorf("service.BuyExaminationService user not found")
 		return constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
 	}
-	examination, err := dao.GetUserExamination(userInfo.ID)
+	tx := dao.StartTransaction()
+	defer dao.ShutDownTransaction(tx)
+	examination, err := dao.GetUserExamination(tx, userInfo.ID)
 	if err != nil {
 		tools.GetLogger().Errorf("service.RefundExaminationService->dao.GetUserExamination error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
@@ -103,9 +110,7 @@ func RefundExaminationService(req *model.RefundExamination, openId string) (int,
 		return constant.StatusCodeInputError, errors.New("余额不足")
 	}
 
-	tx := dao.StartTransaction()
-	defer dao.ShutDownTransaction(tx)
-	err = dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
+	effectRows, err := dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
 		UserId:         userInfo.ID,
 		UserCheckCount: examination.UserCheckCount,
 		UserRemainder:  examination.UserRemainder - req.Money,
@@ -116,6 +121,11 @@ func RefundExaminationService(req *model.RefundExamination, openId string) (int,
 		tx.Rollback()
 		tools.GetLogger().Errorf("service.RefundExaminationService->dao.CreateUserExamination error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if effectRows == 0 {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.RefundExaminationService->dao.CreateUserExamination effect rows = 0")
+		return constant.StatusCodeInputError, errors.New("操作太频繁,请稍后重试")
 	}
 	err = dao.CreateExpenseCalendar(tx, &model.GuardianExpenseCalendar{
 		ID:         tools.GenId(),

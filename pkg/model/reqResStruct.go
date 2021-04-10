@@ -1,7 +1,5 @@
 package model
 
-import "time"
-
 type UserReq struct {
 	OpenId           string `json:"open_id"`
 	UserName         string `json:"user_name"`
@@ -25,15 +23,20 @@ type BuyExaminationReq struct {
 type GetExaminationInfoResp struct {
 	CheckCount int     `json:"check_count"`
 	Remainder  float64 `json:"remainder"`
-	CardType   int     `json:"card_type"`
+	CardType   float64 `json:"card_type"`
 }
 
 type ListExpenseCalendarResp struct {
-	Money      float64   `json:"money"`
-	Status     int       `json:"status"`
-	CreateTime time.Time `json:"create_time"`
+	Money      float64 `json:"money"`
+	Status     int     `json:"status"`
+	CreateTime string  `json:"create_time"`
 }
 
 type RefundExamination struct {
 	Money float64 `json:"money"`
+}
+type BookingCheckReq struct {
+	CheckProject []int  `json:"check_project"`
+	StartTime    string `json:"start_time"`
+	PayType      int    `json:"pay_type"`
 }

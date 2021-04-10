@@ -45,15 +45,6 @@ func checkUserReq(req *model.UserReq, isUpdate bool) error {
 		return errors.New("用户性别不合法")
 	}
 
-	if !isUpdate {
-		if req.UserPower == 0 {
-			return errors.New("用户权限不能为空")
-		}
-		if req.UserPower != constant.UserPowerNormal && req.UserPower != constant.UserPowerAdmin {
-			return errors.New("用户权限不合法")
-		}
-	}
-
 	if req.VerificationCode == "" {
 		return errors.New("请输入验证码")
 	}

@@ -70,7 +70,7 @@ func UserLoginService(req *model.UserReq) (int, int64, error) {
 		UserName:    req.UserName,
 		PhoneNumber: req.PhoneNumber,
 		UserGender:  req.UserGender,
-		UserPower:   req.UserPower,
+		UserPower:   constant.UserPowerNormal,
 		CreateTime:  time.Now(),
 		UpdateTime:  time.Now(),
 	})
@@ -92,7 +92,7 @@ func UserLoginService(req *model.UserReq) (int, int64, error) {
 		UserId:         id,
 		UserCheckCount: 0,
 		UserRemainder:  0,
-		UserCardType:   0,
+		UserCardType:   10,
 		CreateTime:     time.Now(),
 		UpdateTime:     time.Now(),
 	})

@@ -1,9 +1,12 @@
 package tools
 
 import (
+	"fmt"
 	"os"
 	"runtime/debug"
 	"time"
+
+	"github.com/MisakiFx/martin/pkg/constant"
 
 	"github.com/MisakiFx/martin/pkg/dependencies"
 
@@ -17,6 +20,7 @@ import (
 var AccessToken string = "42_zW_EXSO_cKCKP6dYBkTRiDj8JnndxCyDbsRgjmuoIaB_8n2KKiI8VrlpYoW3aQUp4_JG_-o3STGr8AnUqOA1xiyqgXQ2cFnEopto4NTyFwsi8wkcboMH-uDZaCKsEBO-G03ISlfHo5PetU_0FSNeAIAMZU"
 var JsonIter = jsoniter.ConfigCompatibleWithStandardLibrary
 var sugarLogger *zap.SugaredLogger
+var LocGloble *time.Location
 
 func getAccessTokenInit() {
 	ticker := time.NewTicker(time.Minute * 110)
@@ -38,6 +42,14 @@ func getAccessTokenInit() {
 	}
 }
 
+func locationInit() {
+	loc, err := time.LoadLocation(constant.TimeLocation)
+	if err != nil {
+		panic(fmt.Sprintf("Init time error : %v", err))
+	}
+	LocGloble = loc
+}
+
 func loggerInit() {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -50,4 +62,5 @@ func loggerInit() {
 func Init() {
 	//getAccessTokenInit()
 	loggerInit()
+	locationInit()
 }

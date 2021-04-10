@@ -16,22 +16,22 @@ func CreateExpenseCalendar(tx *gorm.DB, expense *model.GuardianExpenseCalendar) 
 	return err
 }
 
-func ListExpenseCalendar(userId int64, page, size int) (int64, []model.GuardianExpenseCalendar, error) {
+func ListExpenseCalendar(userId int64, page, size int, oldTime time.Time) (int64, []model.GuardianExpenseCalendar, error) {
 	query := mysql.GetMysqlClient()
-	var expense []model.GuardianExpenseCalendar
-	oldTime := time.Now().AddDate(0, 0, -30)
-	query = query.Where("user_id = ? AND create_time >= ?", userId, oldTime).Order("create_time DESC")
+	var expenses []model.GuardianExpenseCalendar
+	var expense model.GuardianExpenseCalendar
+	query = query.Table(expense.TableName()).Where("user_id = ? AND create_time >= ?", userId, oldTime).Order("create_time DESC")
 	var count int64
 	err := query.Count(&count).Error
 	if err != nil {
 		return 0, nil, err
 	}
-	if page != 0 && size == 0 {
+	if page != 0 && size != 0 {
 		query = query.Offset((page - 1) * size).Limit(size)
 	}
-	err = query.Find(&expense).Error
+	err = query.Find(&expenses).Error
 	if err != nil {
 		return 0, nil, err
 	}
-	return count, expense, nil
+	return count, expenses, nil
 }

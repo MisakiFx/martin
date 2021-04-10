@@ -5,7 +5,56 @@ type Examination struct {
 	Cost       float64
 	CheckCount int
 	Remainder  float64
-	CardType   int
+	CardType   float64
+}
+
+type CheckProject struct {
+	Id    int
+	Name  string
+	Money float64
+}
+
+var CheckProjectMap = map[int]*CheckProject{
+	1: {
+		Id:    1,
+		Name:  "内科",
+		Money: 30,
+	},
+	2: {
+		Id:    2,
+		Name:  "外科",
+		Money: 30,
+	},
+	3: {
+		Id:    3,
+		Name:  "耳鼻喉科",
+		Money: 30,
+	},
+	4: {
+		Id:    4,
+		Name:  "肝功",
+		Money: 199,
+	},
+	5: {
+		Id:    5,
+		Name:  "血糖",
+		Money: 30,
+	},
+	6: {
+		Id:    6,
+		Name:  "血脂",
+		Money: 30,
+	},
+	7: {
+		Id:    7,
+		Name:  "肾功",
+		Money: 299,
+	},
+}
+
+type BookingPay struct {
+	Remainder  float64 `json:"remainder"`
+	CheckCount int     `json:"check_count"`
 }
 
 var ExaminationMap = map[int]*Examination{

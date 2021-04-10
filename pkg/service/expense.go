@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"time"
 
 	"github.com/MisakiFx/martin/pkg/constant"
 	"github.com/MisakiFx/martin/pkg/dao"
@@ -19,7 +20,9 @@ func ListExpenseCalendarService(openId string, page int, size int) ([]model.List
 		tools.GetLogger().Errorf("service.ListExpenseCalendarService user not found")
 		return nil, 0, constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
 	}
-	count, expenses, err := dao.ListExpenseCalendar(userInfo.ID, page, size)
+	//操作记录只取过去30天的
+	oldTime := time.Now().AddDate(0, 0, -30)
+	count, expenses, err := dao.ListExpenseCalendar(userInfo.ID, page, size, oldTime)
 	if err != nil {
 		tools.GetLogger().Errorf("service.ListExpenseCalendarService->dao.ListExpenseCalendar error : %v", err)
 		return nil, 0, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
@@ -29,7 +32,7 @@ func ListExpenseCalendarService(openId string, page int, size int) ([]model.List
 		list = append(list, model.ListExpenseCalendarResp{
 			Money:      expense.Money,
 			Status:     expense.Status,
-			CreateTime: expense.CreateTime,
+			CreateTime: expense.CreateTime.Format(constant.TimeFormatString),
 		})
 	}
 	return list, count, constant.StatusCodeSuccess, nil
