@@ -86,3 +86,47 @@ func BookingCheck(c *gin.Context) {
 		},
 	})
 }
+
+func ListCheck(c *gin.Context) {
+	tools.GetLogger().Infof("handler.ListCheck path : %v", c.Request.URL.String())
+	page, size, err := getPageSizeFromQuery(c)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.ListCheck get page size error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	openIdInterface, ok := c.Get(constant.UserOpenIdContextKey)
+	openId, ok2 := openIdInterface.(string)
+	if !ok || !ok2 || openId == "" {
+		tools.GetLogger().Errorf("handler.BuyExamination get user info from context error")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeAuthError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeAuthError],
+		})
+		return
+	}
+	count, list, statusCode, err := service.ListCheckService(openId, page, size)
+	if statusCode != constant.StatusCodeSuccess {
+		tools.GetLogger().Errorf("handler.ListCheck->service.ListCheckService error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": statusCode,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+		"data": gin.H{
+			"list":  list,
+			"count": count,
+		},
+	})
+}
+
+func CheckResult(c *gin.Context) {
+
+}

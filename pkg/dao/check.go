@@ -57,3 +57,23 @@ func CreateCheckResult(tx *gorm.DB, result *model.GuardianCheckResult) error {
 	err := tx.Create(result).Error
 	return err
 }
+
+func ListCheck(userId int64, page, size int) (int64, []model.GuardianBookingInfo, error) {
+	query := mysql.GetMysqlClient()
+	var bookingInfo model.GuardianBookingInfo
+	result := make([]model.GuardianBookingInfo, 0)
+	query = query.Table(bookingInfo.TableName()).Where("user_id = ?", userId).Order("create_time")
+	var count int64
+	err := query.Count(&count).Error
+	if err != nil {
+		return 0, nil, err
+	}
+	if page != 0 && size != 0 {
+		query = query.Offset((page - 1) * size).Limit(size)
+	}
+	err = query.Find(&result).Error
+	if err != nil {
+		return 0, nil, err
+	}
+	return count, result, nil
+}

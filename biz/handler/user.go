@@ -138,6 +138,14 @@ func GetUserInfo(c *gin.Context) {
 		})
 		return
 	}
+	if userInfo == nil {
+		tools.GetLogger().Errorf("handler.GetUserInfo->service.GetUserInfo do not found user info")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeAuthError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeAuthError],
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"code": constant.StatusCodeSuccess,
 		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],

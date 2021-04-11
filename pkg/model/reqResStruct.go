@@ -40,3 +40,14 @@ type BookingCheckReq struct {
 	StartTime    string `json:"start_time"`
 	PayType      int    `json:"pay_type"`
 }
+
+type ListCheckResp struct {
+	Id            int64   `json:"id"`
+	CheckProject  []int   `json:"check_project"`
+	StartTime     string  `json:"start_time"`
+	EndTime       string  `json:"end_time"`
+	Status        int     `json:"status"`
+	CreateTime    string  `json:"create_time"`
+	PayReminder   float64 `json:"pay_reminder"`
+	PayCheckCount int     `json:"pay_check_count"`
+}

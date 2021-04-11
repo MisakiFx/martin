@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/MisakiFx/martin/pkg/constant"
@@ -176,4 +177,51 @@ func BookingCheckService(req *model.BookingCheckReq, openId string) (int64, int,
 
 	//todo 起一个timer定时提醒
 	return bookingId, constant.StatusCodeSuccess, nil
+}
+
+func ListCheckService(openId string, page, size int) (int64, []model.ListCheckResp, int, error) {
+	userInfo, err := dao.GetUserInfoByOpenId(openId)
+	if err != nil {
+		tools.GetLogger().Errorf("service.RefundExaminationService->dao.GetUserInfoByOpenId error : %v", err)
+		return 0, nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if userInfo == nil {
+		tools.GetLogger().Errorf("service.BuyExaminationService user not found")
+		return 0, nil, constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
+	}
+	count, checks, err := dao.ListCheck(userInfo.ID, page, size)
+	if err != nil {
+		tools.GetLogger().Errorf("service.RefundExaminationService->dao.ListCheckService error : %v", err)
+		return 0, nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	list := make([]model.ListCheckResp, 0)
+	for _, check := range checks {
+		proString := strings.Split(check.CheckProject, ",")
+		proInt := make([]int, 0)
+		for _, pro := range proString {
+			proIntTemp, err := strconv.ParseInt(pro, 10, 32)
+			if err != nil {
+				tools.GetLogger().Errorf("service.RefundExaminationService : 存在不合法的检查项目")
+				return 0, nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+			}
+			proInt = append(proInt, int(proIntTemp))
+		}
+		var pay model.BookingPay
+		err = json.Unmarshal([]byte(check.Pay), &pay)
+		if err != nil {
+			tools.GetLogger().Errorf("service.RefundExaminationService : 付款方式不合法")
+			return 0, nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+		}
+		list = append(list, model.ListCheckResp{
+			Id:            check.ID,
+			CheckProject:  proInt,
+			StartTime:     check.StartTime.Format(constant.TimeFormatString),
+			EndTime:       check.EndTime.Format(constant.TimeFormatString),
+			Status:        check.Status,
+			CreateTime:    check.CreateTime.Format(constant.TimeFormatString),
+			PayReminder:   pay.Remainder,
+			PayCheckCount: pay.CheckCount,
+		})
+	}
+	return count, list, constant.StatusCodeSuccess, nil
 }

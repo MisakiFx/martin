@@ -35,5 +35,7 @@ func customizeRegister(r *gin.Engine) {
 	checking := api.Group("/check")
 	{
 		checking.POST("/booking", middleware.Auth, handler.BookingCheck)
+		checking.GET("/list", middleware.Auth, handler.ListCheck)
+		checking.GET("/result/:id", middleware.Auth, handler.CheckResult)
 	}
 }

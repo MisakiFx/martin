@@ -21,10 +21,14 @@ import (
 )
 
 func GetUserInfo(openId string) (*model.GetUserInfoResp, error) {
-	userInfo, err := dao.GetUserInfo(openId)
+	userInfo, err := dao.GetUserInfoByOpenId(openId)
 	if err != nil {
 		tools.GetLogger().Errorf("service.GetUserInfo->dao.GetUserInfo error : %v", err)
 		return nil, err
+	}
+	if userInfo == nil {
+		tools.GetLogger().Errorf("service.GetUserInfo->dao.GetUserInfo do not found user info")
+		return nil, nil
 	}
 	return &model.GetUserInfoResp{
 		OpenId:      userInfo.OpenId,

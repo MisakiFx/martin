@@ -48,7 +48,7 @@ var CheckProjectMap = map[int]*CheckProject{
 	7: {
 		Id:    7,
 		Name:  "肾功",
-		Money: 299,
+		Money: 269,
 	},
 }
 
