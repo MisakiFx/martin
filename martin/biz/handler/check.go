@@ -127,6 +127,16 @@ func ListCheck(c *gin.Context) {
 	})
 }
 
-func CheckResult(c *gin.Context) {
-
+func GetCheckResult(c *gin.Context) {
+	tools.GetLogger().Infof("handler.ListCheck path : %v", c.Request.URL.String())
+	openIdInterface, ok := c.Get(constant.UserOpenIdContextKey)
+	openId, ok2 := openIdInterface.(string)
+	if !ok || !ok2 || openId == "" {
+		tools.GetLogger().Errorf("handler.BuyExamination get user info from context error")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeAuthError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeAuthError],
+		})
+		return
+	}
 }

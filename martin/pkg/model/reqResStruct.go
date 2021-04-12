@@ -51,3 +51,7 @@ type ListCheckResp struct {
 	PayReminder   float64 `json:"pay_reminder"`
 	PayCheckCount int     `json:"pay_check_count"`
 }
+
+type GetCheckResultResp struct {
+	BookingId int64 `json:"booking_id"`
+}

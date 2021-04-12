@@ -225,3 +225,7 @@ func ListCheckService(openId string, page, size int) (int64, []model.ListCheckRe
 	}
 	return count, list, constant.StatusCodeSuccess, nil
 }
+
+func GetCheckResultService(openId string) {
+
+}
