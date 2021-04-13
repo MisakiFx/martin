@@ -1,19 +1,33 @@
 <template>
   <div class="bottom-tab">
-    <span class="tab-item">
-      <img src="../../../static/img/store.png" alt="">
-      <span>体检商城</span>
+    <span class="tab-item" @click="switchTo('/home')">
+      <img :src="'/home' === $route.path ? tabBarImgArr[0].selected : tabBarImgArr[0].normal" alt="">
+      <span :class="{on: '/home' === $route.path}">体检商城</span>
     </span>
-    <span class="tab-item">
-      <img src="../../../static/img/me.png" alt="">
-      <span>个人中心</span>
+    <span class="tab-item" @click="switchTo('/me')">
+      <img :src="'/me' === $route.path ? tabBarImgArr[1].selected : tabBarImgArr[1].normal" alt="">
+      <span :class="{on: '/me' === $route.path}">个人中心</span>
     </span>
   </div>
 </template>
 
 <script>
     export default {
-        name: "TabBar"
+        name: "TabBar",
+        data(){
+          return {
+            tabBarImgArr: [
+              {normal: require('../../../static/img/store.png'), selected: require('../../../static/img/store_click.png')},
+              {normal: require('../../../static/img/me.png'), selected: require('../../../static/img/me_click.png')},
+            ]
+          }
+        },
+        methods:{
+          switchTo(path){
+            //console.log(this.$router);
+            this.$router.replace(path);
+          }
+        }
     }
 </script>
 
@@ -39,5 +53,5 @@
         width 15%
         margin-bottom 2px
       .on
-        color red
+        color black
 </style>

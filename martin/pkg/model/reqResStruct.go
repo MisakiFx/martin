@@ -53,5 +53,12 @@ type ListCheckResp struct {
 }
 
 type GetCheckResultResp struct {
-	BookingId int64 `json:"booking_id"`
+	BookingId     int64  `json:"booking_id"`
+	Internal      string `json:"internal"`
+	Surgery       string `json:"surgery"`
+	ENT           string `json:"ent"`
+	SGPT          string `json:"sgpt"`
+	BloodGlucode  string `json:"blood_glucode"`
+	BloodFat      string `json:"blood_fat"`
+	RenalFunction string `json:"renal_function"`
 }

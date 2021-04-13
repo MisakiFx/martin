@@ -27,6 +27,19 @@ func GetStartedBookingCheck(tx *gorm.DB, userId int64) (*model.GuardianBookingIn
 	return &info, nil
 }
 
+func GetCheckResultByBookingId(bookingId int64) (*model.GuardianCheckResult, error) {
+	query := mysql.GetMysqlClient()
+	var result model.GuardianCheckResult
+	err := query.Table(result.TableName()).Where("booking_id = ?").First(&result).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &result, nil
+}
+
 func CountBookedCheckTime(tx *gorm.DB, startTime time.Time) (int, error) {
 	if tx != nil {
 		tx = tx.Set("gorm:query_option", "FOR UPDATE")

@@ -226,6 +226,29 @@ func ListCheckService(openId string, page, size int) (int64, []model.ListCheckRe
 	return count, list, constant.StatusCodeSuccess, nil
 }
 
-func GetCheckResultService(openId string) {
-
+func GetCheckResultService(openId string, bookingId int64) (*model.GetCheckResultResp, int, error) {
+	userInfo, err := dao.GetUserInfoByOpenId(openId)
+	if err != nil {
+		tools.GetLogger().Errorf("service.RefundExaminationService->dao.GetUserInfoByOpenId error : %v", err)
+		return nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if userInfo == nil {
+		tools.GetLogger().Errorf("service.BuyExaminationService user not found")
+		return nil, constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
+	}
+	result, err := dao.GetCheckResultByBookingId(bookingId)
+	if err != nil {
+		tools.GetLogger().Errorf("service.GetCheckResultService->dao.GetCheckResultByBookingId error : %v", err)
+		return nil, constant.StatusCodeServiceError, err
+	}
+	return &model.GetCheckResultResp{
+		BookingId:     result.BookingId,
+		Internal:      result.Internal,
+		Surgery:       result.Surgery,
+		ENT:           result.Ent,
+		SGPT:          result.Sgpt,
+		BloodGlucode:  result.BloodGlucode,
+		BloodFat:      result.BloodFat,
+		RenalFunction: result.RenalFunction,
+	}, constant.StatusCodeSuccess, nil
 }

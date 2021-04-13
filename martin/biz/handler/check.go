@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/MisakiFx/martin/martin/pkg/service"
@@ -139,4 +140,30 @@ func GetCheckResult(c *gin.Context) {
 		})
 		return
 	}
+	bookingIdString := c.Param("id")
+	bookingId, err := strconv.ParseInt(bookingIdString, 10, 64)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.GetCheckResult parse id error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	result, statusCode, err := service.GetCheckResultService(openId, bookingId)
+	if statusCode != constant.StatusCodeSuccess {
+		tools.GetLogger().Errorf("handler.GetCheckResult->service.GetCheckResultService error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": statusCode,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+		"data": gin.H{
+			"result": result,
+		},
+	})
 }
