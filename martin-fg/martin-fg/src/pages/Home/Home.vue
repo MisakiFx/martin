@@ -4,7 +4,6 @@
       <div class="hot-ad">
         <img src="../../../static/img/banner.jpeg" alt="" width="100%">
       </div>
-
       <!--商品列表-->
       <home-shop-list />
     </div>
@@ -18,6 +17,8 @@
         HomeShopList
       },
       mounted() {
+        //试着请求一下用户数据
+        this.$store.dispatch('reqUserInfo');
       }
     }
 </script>

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/MisakiFx/martin/martin/biz/handler"
 	"github.com/MisakiFx/martin/martin/biz/middleware"
 	"github.com/gin-gonic/gin"
@@ -9,6 +11,7 @@ import (
 func customizeRegister(r *gin.Engine) {
 	r.Use(gin.Recovery())
 
+	r.Use(handler.CORS)
 	r.GET("/", middleware.CheckToken, handler.ServiceGet)
 	r.POST("/", middleware.CheckToken, handler.ServicePost)
 
@@ -38,4 +41,11 @@ func customizeRegister(r *gin.Engine) {
 		checking.GET("/list", middleware.Auth, handler.ListCheck)
 		checking.GET("/result/:id", middleware.Auth, handler.GetCheckResult)
 	}
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 0,
+			"msg":  "成功",
+		})
+		return
+	})
 }

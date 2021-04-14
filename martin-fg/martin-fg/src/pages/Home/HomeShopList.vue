@@ -1,11 +1,11 @@
 <template>
-  <div class="shop-container">
+  <div class="shop-container" v-if="shopList.length > 0">
     <ul class="shop-list">
-      <li class="shop-list-item">
-        <img src="../../../static/img/Plan/planA.jpg" alt="" width="100%">
-        <h4 class="list-item-title">套餐A</h4>
+      <li class="shop-list-item" v-for="(shop, index) in shopList" :key="index">
+        <img :src="shop.image_url" alt="" width="100%">
+        <h4 class="list-item-title">{{shop.title}}</h4>
         <div class="list-item-bottom">
-          <span class="item-price">¥300</span>
+          <span class="item-price">¥{{shop.price}}</span>
           <span class="item-buy">
             <button>购买</button>
           </span>
@@ -16,14 +16,18 @@
 </template>
 
 <script>
+    import {mapState} from 'vuex'
     export default {
-        name: "HomeShopList"
+        name: "HomeShopList",
+        computed:{
+          ...mapState(['shopList'])
+        }
     }
 </script>
 
 <style scoped lang="stylus" ref="stylesheet/stylus">
   .shop-container
-    margin-bottom 50px
+    padding-bottom 40px
     background-color: #f5f5f5
     .shop-list
       .shop-list-item

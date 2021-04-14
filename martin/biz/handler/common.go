@@ -19,3 +19,12 @@ func getPageSizeFromQuery(c *gin.Context) (int, int, error) {
 	}
 	return int(page), int(size), nil
 }
+
+func CORS(c *gin.Context) {
+	origin := "*"
+	c.Writer.Header().Set("Access-Control-Allow-Headers", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+	c.Writer.Header().Set("Access-Control-Allow-Methods", "*")
+	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	c.Next()
+}
