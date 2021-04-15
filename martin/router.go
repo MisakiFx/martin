@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/MisakiFx/martin/martin/pkg/constant"
+
 	"github.com/MisakiFx/martin/martin/biz/handler"
 	"github.com/MisakiFx/martin/martin/biz/middleware"
 	"github.com/gin-gonic/gin"
@@ -43,8 +45,8 @@ func customizeRegister(r *gin.Engine) {
 	}
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"code": 0,
-			"msg":  "成功",
+			"code": constant.StatusCodeInputError,
+			"msg":  "未定义的路由",
 		})
 		return
 	})

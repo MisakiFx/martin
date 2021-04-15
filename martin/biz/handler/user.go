@@ -20,7 +20,7 @@ func checkUserReq(req *model.UserReq, isUpdate bool) error {
 		return errors.New("入参错误")
 	}
 	if len(req.OpenId) <= 0 {
-		return errors.New("用户openId不能为空")
+		return errors.New("无法识别用户身份，请从微信公众号打开")
 	}
 
 	if len(req.UserName) <= 0 {

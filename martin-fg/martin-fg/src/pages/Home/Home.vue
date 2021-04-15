@@ -17,8 +17,6 @@
         HomeShopList
       },
       mounted() {
-        //试着请求一下用户数据
-        this.$store.dispatch('reqUserInfo');
       }
     }
 </script>

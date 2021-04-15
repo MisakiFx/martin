@@ -15,7 +15,7 @@
           <!--手机验证码登录部分-->
           <div class="current">
             <section class="login-message">
-              <input type="tel" maxlength="8" placeholder="姓名" v-model="name">
+              <input type="tel" maxlength="8" placeholder="姓名" v-model="user_name">
             </section>
             <section class="login-message">
               <input type="tel" maxlength="11" placeholder="手机号" v-model="phone">
@@ -39,7 +39,7 @@
               <input type="tel" maxlength="6" placeholder="验证码" v-model="code">
             </section>
             <section class="login-hint">
-              温馨提示：未注册撩课帐号的手机号，登录时将自动注册，且代表已同意
+              温馨提示：未注册体检中心的手机号，登录时将自动注册，且代表已同意
               <a href="javascript:;">服务协议与隐私政策</a>
             </section>
           </div>
@@ -52,7 +52,8 @@
 </template>
 
 <script>
-    import {getPhoneCode} from '../../api';
+    import {getPhoneCode, postUserLogin} from '../../api';
+    import {Toast} from 'mint-ui';
     export default {
         name: "Login",
         data() {
@@ -97,13 +98,59 @@
                 });
 
                 // 2.5 后续处理
-                setTimeout(()=>{
-                  clearInterval(this.intervalId);
-                  this.countDown = 0;
-                }, 3000);
+                //setTimeout(()=>{
+                //  clearInterval(this.intervalId);
+                //  this.countDown = 0;
+                //}, 3000);
               }
             }
           },
+          async login() {
+            if(this.user_name === '') {
+              Toast("请输入姓名")
+              return;
+            }
+            if(!this.phone) {
+              Toast("请输入手机号码")
+              return;
+            }
+            if (!this.phoneRight) {
+              Toast("请输入正确的手机号码")
+              return;
+            }
+            if(!this.code) {
+              Toast("请输入验证码")
+              return;
+            }
+            if(!(/^\d{6}$/gi.test(this.code))) {
+              Toast("请输入正确的验证码")
+              return;
+            }
+
+            //调用接口
+            const result = await postUserLogin({
+              "open_id": this.$store.state.userOpenId,
+              "user_name":this.user_name,
+              "phone_number": this.phone,
+              "user_gender" : 1,
+              "verification_code" : this.code
+            })
+
+            console.log(result)
+            if(result.code !== 0) {
+              Toast(result.msg)
+              return;
+            }
+            Toast("注册成功")
+            //重新拉取用户信息
+            await this.$store.dispatch('reqUserInfo', this.$store.state.userOpenId);
+            if(!this.$store.state.userInfo.open_id) {
+              Toast("获取用户信息失败:" + this.$store.state.userInfo.msg)
+              return;
+            }
+            //跳转
+            this.$router.back()
+          }
         }
     }
 </script>
