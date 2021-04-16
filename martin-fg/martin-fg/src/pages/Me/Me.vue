@@ -1,7 +1,7 @@
 <template>
   <div class="me">
     <div v-if="userInfo.open_id">
-      主面板
+      <me-top/>
     </div>
     <select-login v-else/>
   </div>
@@ -9,6 +9,7 @@
 
 <script>
     import SelectLogin from "../Login/SelectLogin";
+    import MeTop from "./MeTop";
     import {mapState} from 'vuex'
     export default {
       name: "Me",
@@ -16,7 +17,8 @@
         ...mapState(['userInfo'])
       },
       components:{
-        SelectLogin
+        SelectLogin,
+        MeTop
       },
     }
 
