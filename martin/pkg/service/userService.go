@@ -145,19 +145,12 @@ func LoginVerificationCode(phoneNumber string) error {
 }
 
 func UpdateUserBaseInfo(req *model.UserReq) (int, error) {
-	err := checkVerificationCode(req.PhoneNumber, req.VerificationCode)
-	if err != nil {
-		return constant.StatusCodeInputError, err
-	}
-	err = dao.UpdateUserBaseInfo(&model.GuardianUserInfo{
-		ID:          0,
-		OpenId:      req.OpenId,
-		UserName:    req.UserName,
-		PhoneNumber: req.PhoneNumber,
-		UserGender:  req.UserGender,
-		UserPower:   req.UserPower,
-		CreateTime:  time.Now(),
-		UpdateTime:  time.Now(),
+	err := dao.UpdateUserBaseInfo(&model.GuardianUserInfo{
+		ID:         0,
+		OpenId:     req.OpenId,
+		UserName:   req.UserName,
+		UserGender: req.UserGender,
+		UpdateTime: time.Now(),
 	})
 	if err != nil {
 		tools.GetLogger().Errorf("service.UpdateUserBaseInfo->dao.UpdateUserBaseInfo error : %v", err)

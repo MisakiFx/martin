@@ -132,7 +132,7 @@
               "open_id": this.$store.state.userOpenId,
               "user_name":this.user_name,
               "phone_number": this.phone,
-              "user_gender" : 1,
+              "user_gender" : 0,
               "verification_code" : this.code
             })
 

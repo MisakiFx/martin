@@ -30,23 +30,26 @@ func checkUserReq(req *model.UserReq, isUpdate bool) error {
 		return errors.New("用户名超过255个字符")
 	}
 
-	if len(req.PhoneNumber) <= 0 {
-		return errors.New("用户电话不能为空")
-	}
-	phoneNumberCount := utf8.RuneCountInString(req.PhoneNumber)
-	if phoneNumberCount != 11 && phoneNumberCount != 8 {
-		return errors.New("用户电话不合法")
-	}
-
 	if req.UserGender == 0 {
 		return errors.New("用户性别不能为空")
 	}
+
 	if req.UserGender != constant.UserGenderMale && req.UserGender != constant.UserGenderFemale {
 		return errors.New("用户性别不合法")
 	}
 
-	if req.VerificationCode == "" {
-		return errors.New("请输入验证码")
+	if !isUpdate {
+		if len(req.PhoneNumber) <= 0 {
+			return errors.New("用户电话不能为空")
+		}
+		phoneNumberCount := utf8.RuneCountInString(req.PhoneNumber)
+		if phoneNumberCount != 11 && phoneNumberCount != 8 {
+			return errors.New("用户电话不合法")
+		}
+
+		if req.VerificationCode == "" {
+			return errors.New("请输入验证码")
+		}
 	}
 	return nil
 }

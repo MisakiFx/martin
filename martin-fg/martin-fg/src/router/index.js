@@ -5,6 +5,7 @@ import VueRouter from 'vue-router'
 import Home from '../pages/Home/Home'
 import Me from '../pages/Me/Me'
 import Login from '../pages/Login/Login'
+import MeDetail from "../pages/Me/MeDetail";
 
 const originalPush = VueRouter.prototype.push
 
@@ -27,6 +28,7 @@ export default new VueRouter({
     },
     {path: '/me', component: Me, meta: {showBottomTabBar: true}},
     {path: '/login', component: Login},
+    {path: '/detail', component: MeDetail},
     {path: '/', redirect: '/home'}
   ]
 });

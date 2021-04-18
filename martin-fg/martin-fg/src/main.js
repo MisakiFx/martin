@@ -7,6 +7,11 @@ import router from './router/index'
 
 import "@/common/css/style.css"
 
+import {Actionsheet} from 'mint-ui'
+Vue.component(Actionsheet.name, Actionsheet)
+
+
+
 new Vue({
   el:'#app',
   router,

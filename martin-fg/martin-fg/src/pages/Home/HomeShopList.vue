@@ -7,7 +7,7 @@
         <div class="list-item-bottom">
           <span class="item-price">¥{{shop.price}}</span>
           <span class="item-buy">
-            <button>购买</button>
+            <button @click="clickBuy(index)">购买</button>
           </span>
         </div>
       </li>
@@ -17,10 +17,18 @@
 
 <script>
     import {mapState} from 'vuex'
+    import { MessageBox } from 'mint-ui';
     export default {
         name: "HomeShopList",
         computed:{
           ...mapState(['shopList'])
+        },
+        methods: {
+          async clickBuy(index = 0) {
+            MessageBox.confirm("是否确认购买?").then(action=>{
+
+            })
+          }
         }
     }
 </script>

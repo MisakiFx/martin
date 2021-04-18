@@ -3,8 +3,8 @@
     <router-link tag="div" class="user" to="/detail">
       <img src="../../../static/img/myIcon.png" alt="">
       <p v-if="userInfo.phone_number">{{userInfo.phone_number | phoneFormat}}</p>
-      <p>{{userInfo.user_name}}</p>
       <i class="itlike-3"></i>
+      <p>{{userInfo.user_name}}</p>
     </router-link>
     <div class="my-older">
       <div class="older-top">

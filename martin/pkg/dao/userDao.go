@@ -17,10 +17,9 @@ func CreateUser(tx *gorm.DB, user *model.GuardianUserInfo) error {
 func UpdateUserBaseInfo(user *model.GuardianUserInfo) error {
 	query := mysql.GetMysqlClient()
 	err := query.Table(user.TableName()).Where("open_id = ?", user.OpenId).Updates(map[string]interface{}{
-		"user_name":    user.UserName,
-		"phone_number": user.PhoneNumber,
-		"user_gender":  user.UserGender,
-		"update_time":  user.UpdateTime,
+		"user_name":   user.UserName,
+		"user_gender": user.UserGender,
+		"update_time": user.UpdateTime,
 	}).Error
 	return err
 }

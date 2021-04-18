@@ -15,7 +15,7 @@ export const getUserOpenId = (code = "")=>ajax(BASE_URL + '/user/open_id/' + cod
 export const postUserLogin = (userInfo = {})=>ajax(BASE_URL + '/user/login', userInfo, {}, 'POST')
 
 //更改用户信息
-export const postUpdateUserInfo = (userInfo = {})=>ajax(BASE_URL + '/user/update', userInfo, {'open_id':userInfo.open_Id}, 'POST')
+export const postUpdateUserInfo = (userInfo = {})=>ajax(BASE_URL + '/user/update', userInfo, {'open_id':userInfo.open_id}, 'POST')
 
 //购买体检卡
 export const postBuyExamination = (examination = {}, userInfo = {})=>ajax(BASE_URL + '/examination/buy', examination, {'open_id' : userInfo.open_id}, 'POST')
