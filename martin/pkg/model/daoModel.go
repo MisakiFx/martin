@@ -62,6 +62,7 @@ func (g *GuardianBookingInfo) TableName() string {
 
 type GuardianCheckResult struct {
 	ID            int64     `gorm:"column:id" json:"id" form:"id"`
+	UserId        int64     `gorm:"column:user_id" json:"user_id" form:"user_id"`
 	BookingId     int64     `gorm:"column:booking_id" json:"booking_id" form:"booking_id"`
 	Internal      string    `gorm:"column:internal" json:"internal" form:"internal"`
 	Surgery       string    `gorm:"column:surgery" json:"surgery" form:"surgery"`

@@ -20,7 +20,7 @@ func ListExpenseCalendarService(openId string, page int, size int) ([]model.List
 		tools.GetLogger().Errorf("service.ListExpenseCalendarService user not found")
 		return nil, 0, constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
 	}
-	//操作记录只取过去30天的
+	//消费记录只取过去30天的
 	oldTime := time.Now().AddDate(0, 0, -30)
 	count, expenses, err := dao.ListExpenseCalendar(userInfo.ID, page, size, oldTime)
 	if err != nil {
@@ -29,10 +29,15 @@ func ListExpenseCalendarService(openId string, page int, size int) ([]model.List
 	}
 	list := make([]model.ListExpenseCalendarResp, 0)
 	for _, expense := range expenses {
+		examinationName := ""
+		if expense.Status == constant.ExpenseStatusCost {
+			examinationName = model.MoneyToExaminationNameMap[expense.Money]
+		}
 		list = append(list, model.ListExpenseCalendarResp{
-			Money:      expense.Money,
-			Status:     expense.Status,
-			CreateTime: expense.CreateTime.Format(constant.TimeFormatString),
+			Money:           expense.Money,
+			Status:          expense.Status,
+			ExaminationName: examinationName,
+			CreateTime:      expense.CreateTime.Format(constant.TimeFormatString),
 		})
 	}
 	return list, count, constant.StatusCodeSuccess, nil

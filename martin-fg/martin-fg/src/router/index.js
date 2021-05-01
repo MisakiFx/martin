@@ -6,6 +6,11 @@ import Home from '../pages/Home/Home'
 import Me from '../pages/Me/Me'
 import Login from '../pages/Login/Login'
 import MeDetail from "../pages/Me/MeDetail";
+import MeExpense from "../pages/Me/MeExpense";
+import CheckBooking from "../pages/Check/CheckBooking";
+import CheckList from "../pages/Check/CheckList";
+import CheckResult from "../pages/Check/CheckResult";
+import Refund from "../pages/Me/Refund";
 
 const originalPush = VueRouter.prototype.push
 
@@ -29,6 +34,11 @@ export default new VueRouter({
     {path: '/me', component: Me, meta: {showBottomTabBar: true}},
     {path: '/login', component: Login},
     {path: '/detail', component: MeDetail},
+    {path: '/expense', component: MeExpense},
+    {path: '/check_booking', component: CheckBooking},
+    {path: '/checks', component: CheckList},
+    {path: '/check_result/:id', component: CheckResult},
+    {path: '/refund', component: Refund},
     {path: '/', redirect: '/home'}
   ]
 });

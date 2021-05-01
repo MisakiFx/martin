@@ -18,7 +18,7 @@ import (
 func checkBooingCheckReq(req *model.BookingCheckReq) error {
 	startTime, err := time.ParseInLocation(constant.TimeFormatString, req.StartTime, tools.LocGloble)
 	if err != nil || (startTime.Hour() != 8 && startTime.Hour() != 10 && startTime.Hour() != 14 && startTime.Hour() != 16) || startTime.Minute() != 0 || startTime.Second() != 0 {
-		return errors.New("时间格式不合要求")
+		return errors.New("请正确选择预约的时间")
 	}
 	threeDaysLater := time.Now().Add(time.Hour * 24 * 3)
 	limitTime := time.Date(threeDaysLater.Year(), threeDaysLater.Month(), threeDaysLater.Day(), 23, 59, 59, 0, tools.LocGloble)
@@ -27,6 +27,9 @@ func checkBooingCheckReq(req *model.BookingCheckReq) error {
 	}
 	if startTime.Sub(time.Now()) < 0 {
 		return errors.New("预约的体检时间已过期")
+	}
+	if req.CheckProject == nil || len(req.CheckProject) <= 0 {
+		return errors.New("预约的体检项目不能为空")
 	}
 	for _, project := range req.CheckProject {
 		if _, ok := model.CheckProjectMap[project]; !ok {
@@ -165,5 +168,42 @@ func GetCheckResult(c *gin.Context) {
 		"data": gin.H{
 			"result": result,
 		},
+	})
+}
+
+func CancelBookingCheck(c *gin.Context) {
+	tools.GetLogger().Infof("handler.CancelBookingCheck path : %v", c.Request.URL.String())
+	var req model.CancelCheckBookingReq
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.CancelBookingCheck parse req error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	openIdInterface, ok := c.Get(constant.UserOpenIdContextKey)
+	openId, ok2 := openIdInterface.(string)
+	if !ok || !ok2 || openId == "" {
+		tools.GetLogger().Errorf("handler.BuyExamination get user info from context error")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeAuthError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeAuthError],
+		})
+		return
+	}
+	statusCode, err := service.CancelBookingCheckService(openId, req.BookingId)
+	if statusCode != constant.StatusCodeSuccess {
+		tools.GetLogger().Errorf("handler.CancelBookingCheck->service.CancelBookingCheckService error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": statusCode,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
 	})
 }

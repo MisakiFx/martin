@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -14,6 +15,7 @@ import (
 )
 
 func BookingCheckService(req *model.BookingCheckReq, openId string) (int64, int, error) {
+	sort.Ints(req.CheckProject)
 	userInfo, err := dao.GetUserInfoByOpenId(openId)
 	if err != nil {
 		tools.GetLogger().Errorf("service.RefundExaminationService->dao.GetUserInfoByOpenId error : %v", err)
@@ -81,7 +83,8 @@ func BookingCheckService(req *model.BookingCheckReq, openId string) (int64, int,
 		tools.GetLogger().Errorf("service.BookingCheckService->dao.GetUserExamination error : %v", "找不到用户余额信息")
 		return 0, constant.StatusCodeServiceError, errors.New("找不到用户余额信息")
 	}
-	allPay *= examination.UserCardType / 10
+	allPay = allPay * examination.UserCardType / 10
+	allPay = tools.FloatRound(allPay, 2)
 	lastRemainder := examination.UserRemainder
 	lastCheckCount := examination.UserCheckCount
 	if req.PayType == constant.PayTypeRemainder {
@@ -91,6 +94,7 @@ func BookingCheckService(req *model.BookingCheckReq, openId string) (int64, int,
 			return 0, constant.StatusCodeInputError, errors.New("余额不足,请充值")
 		}
 		lastRemainder -= allPay
+		lastRemainder = tools.FloatRound(lastRemainder, 2)
 	}
 	if req.PayType == constant.PayTypeCheckCount {
 		if lastCheckCount < 1 {
@@ -102,7 +106,6 @@ func BookingCheckService(req *model.BookingCheckReq, openId string) (int64, int,
 	}
 
 	//更新余额信息
-	bookingId := tools.GenId()
 	effectRows, err := dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
 		UserId:         userInfo.ID,
 		UserCheckCount: lastCheckCount,
@@ -139,6 +142,7 @@ func BookingCheckService(req *model.BookingCheckReq, openId string) (int64, int,
 		tools.GetLogger().Errorf("service.BookingCheckService marshal pay string error : %v", err)
 		return 0, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
+	bookingId := tools.GenId()
 	err = dao.CreateBookingCheck(tx, &model.GuardianBookingInfo{
 		ID:           bookingId,
 		UserId:       userInfo.ID,
@@ -159,6 +163,7 @@ func BookingCheckService(req *model.BookingCheckReq, openId string) (int64, int,
 	err = dao.CreateCheckResult(tx, &model.GuardianCheckResult{
 		ID:            tools.GenId(),
 		BookingId:     bookingId,
+		UserId:        userInfo.ID,
 		Internal:      "",
 		Surgery:       "",
 		Sgpt:          "",
@@ -229,20 +234,41 @@ func ListCheckService(openId string, page, size int) (int64, []model.ListCheckRe
 func GetCheckResultService(openId string, bookingId int64) (*model.GetCheckResultResp, int, error) {
 	userInfo, err := dao.GetUserInfoByOpenId(openId)
 	if err != nil {
-		tools.GetLogger().Errorf("service.RefundExaminationService->dao.GetUserInfoByOpenId error : %v", err)
+		tools.GetLogger().Errorf("service.GetCheckResultService->dao.GetUserInfoByOpenId error : %v", err)
 		return nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
 	if userInfo == nil {
-		tools.GetLogger().Errorf("service.BuyExaminationService user not found")
+		tools.GetLogger().Errorf("service.GetCheckResultService user not found")
 		return nil, constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
 	}
-	result, err := dao.GetCheckResultByBookingId(bookingId)
+	checkInfo, err := dao.GetCheckInfo(bookingId, userInfo.ID)
+	if err != nil {
+		tools.GetLogger().Errorf("service.GetCheckResultService->dao.GetCheckInfo error : %v", err)
+		return nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if checkInfo == nil {
+		tools.GetLogger().Warn("service.GetCheckResultService->dao.GetCheckInfo can not found id")
+		return &model.GetCheckResultResp{}, constant.StatusCodeInputError, errors.New("没有权限查看该体检结果")
+	}
+	projectsInt := make([]int, 0)
+	projectsString := strings.Split(checkInfo.CheckProject, ",")
+	for _, projectString := range projectsString {
+		proTemp, _ := strconv.ParseInt(projectString, 10, 64)
+		projectsInt = append(projectsInt, int(proTemp))
+	}
+
+	result, err := dao.GetCheckResultByBookingId(bookingId, userInfo.ID)
 	if err != nil {
 		tools.GetLogger().Errorf("service.GetCheckResultService->dao.GetCheckResultByBookingId error : %v", err)
-		return nil, constant.StatusCodeServiceError, err
+		return nil, constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if result == nil {
+		tools.GetLogger().Warn("service.GetCheckResultService->dao.GetCheckResultByBookingId can not found id")
+		return &model.GetCheckResultResp{}, constant.StatusCodeInputError, errors.New("没有权限查看该体检结果")
 	}
 	return &model.GetCheckResultResp{
 		BookingId:     result.BookingId,
+		Projects:      projectsInt,
 		Internal:      result.Internal,
 		Surgery:       result.Surgery,
 		ENT:           result.Ent,
@@ -251,4 +277,91 @@ func GetCheckResultService(openId string, bookingId int64) (*model.GetCheckResul
 		BloodFat:      result.BloodFat,
 		RenalFunction: result.RenalFunction,
 	}, constant.StatusCodeSuccess, nil
+}
+
+func CancelBookingCheckService(openId string, bookingId int64) (int, error) {
+	userInfo, err := dao.GetUserInfoByOpenId(openId)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.GetUserInfoByOpenId error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if userInfo == nil {
+		tools.GetLogger().Errorf("service.CancelBookingCheckService user not found")
+		return constant.StatusCodeAuthError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
+	}
+
+	tx := dao.StartTransaction()
+	defer dao.ShutDownTransaction(tx)
+	//获取体检信息
+	bookingInfo, err := dao.GetUserBookingInfo(userInfo.ID, bookingId)
+	if err != nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.GetUserBookingInfo error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
+	}
+	if bookingInfo == nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService booking is not belong to user")
+		return constant.StatusCodeInputError, errors.New("无权限删除该体检")
+	}
+
+	//验证
+	if bookingInfo.Status != 0 {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService check is start")
+		return constant.StatusCodeInputError, errors.New("体检已经开始不能取消")
+	}
+	var pay model.BookingPay
+	err = json.Unmarshal([]byte(bookingInfo.Pay), &pay)
+	if err != nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService : unmarshal booking pay error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
+	}
+
+	//删除体检记录
+	rows, err := dao.DeleteCheck(tx, userInfo.ID, bookingId)
+	if err != nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.DeleteCheck error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeAuthError])
+	}
+	if rows == 0 {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.DeleteCheck rows effect = 0")
+		return constant.StatusCodeInputError, errors.New("未找到对应体检记录")
+	}
+
+	//退款
+	examination, err := dao.GetUserExamination(tx, userInfo.ID)
+	if err != nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.GetUserExamination error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if examination == nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.GetUserExamination error : %v", "找不到用户余额信息")
+		return constant.StatusCodeServiceError, errors.New("找不到用户余额信息")
+	}
+
+	effectRows, err := dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
+		UserId:         userInfo.ID,
+		UserCheckCount: examination.UserCheckCount + pay.CheckCount,
+		UserRemainder:  tools.FloatRound(examination.UserRemainder+pay.Remainder, 2),
+		UserCardType:   examination.UserCardType,
+		UpdateTime:     examination.UpdateTime,
+	}, userInfo.ID)
+	if err != nil {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.UpdateUserExamination error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if effectRows == 0 {
+		tx.Rollback()
+		tools.GetLogger().Errorf("service.CancelBookingCheckService->dao.UpdateUserExamination effect rows = 0")
+		return constant.StatusCodeInputError, errors.New("操作太频繁,请稍后重试")
+	}
+	tx.Commit()
+	return constant.StatusCodeSuccess, nil
 }

@@ -10,6 +10,18 @@ import (
 	"github.com/MisakiFx/martin/martin/pkg/connection/mysql"
 )
 
+func GetUserBookingInfo(userId int64, bookingId int64) (*model.GuardianBookingInfo, error) {
+	query := mysql.GetMysqlClient()
+	var result model.GuardianBookingInfo
+	err := query.Table(result.TableName()).Where("id = ? AND user_id = ?", bookingId, userId).Find(&result).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &result, nil
+}
 func GetStartedBookingCheck(tx *gorm.DB, userId int64) (*model.GuardianBookingInfo, error) {
 	if tx != nil {
 		tx = tx.Set("gorm:query_option", "FOR UPDATE")
@@ -27,10 +39,10 @@ func GetStartedBookingCheck(tx *gorm.DB, userId int64) (*model.GuardianBookingIn
 	return &info, nil
 }
 
-func GetCheckResultByBookingId(bookingId int64) (*model.GuardianCheckResult, error) {
+func GetCheckResultByBookingId(bookingId, userId int64) (*model.GuardianCheckResult, error) {
 	query := mysql.GetMysqlClient()
 	var result model.GuardianCheckResult
-	err := query.Table(result.TableName()).Where("booking_id = ?").First(&result).Error
+	err := query.Table(result.TableName()).Where("booking_id = ? AND user_id = ?", bookingId, userId).First(&result).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil
@@ -89,4 +101,58 @@ func ListCheck(userId int64, page, size int) (int64, []model.GuardianBookingInfo
 		return 0, nil, err
 	}
 	return count, result, nil
+}
+
+func deleteCheckBooking(tx *gorm.DB, userId, bookingId int64) (int64, error) {
+	if tx == nil {
+		tx = mysql.GetMysqlClient()
+	}
+	var result model.GuardianBookingInfo
+	tx = tx.Delete(result, "id = ? AND user_id = ? AND status = 0", bookingId, userId)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
+func deleteCheckResult(tx *gorm.DB, bookingId, userId int64) (int64, error) {
+	if tx == nil {
+		tx = mysql.GetMysqlClient()
+	}
+	var result model.GuardianCheckResult
+	tx = tx.Delete(result, "booking_id = ? AND user_id = ?", bookingId, userId)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+func DeleteCheck(tx *gorm.DB, userId, bookingId int64) (int64, error) {
+	rows, err := deleteCheckBooking(tx, userId, bookingId)
+	if err != nil {
+		return 0, err
+	}
+	if rows == 0 {
+		return 0, nil
+	}
+	rows, err = deleteCheckResult(tx, bookingId, userId)
+	if err != nil {
+		return 0, err
+	}
+	if rows == 0 {
+		return 0, nil
+	}
+	return rows, nil
+}
+
+func GetCheckInfo(bookingId, userId int64) (*model.GuardianBookingInfo, error) {
+	query := mysql.GetMysqlClient()
+	var res model.GuardianBookingInfo
+	err := query.Table(res.TableName()).Where("id = ? AND user_id = ?", bookingId, userId).Find(&res).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &res, nil
 }

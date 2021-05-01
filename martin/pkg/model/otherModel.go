@@ -91,20 +91,30 @@ var ExaminationMap = map[int]*Examination{
 		Cost:       569,
 		CheckCount: 1,
 		Remainder:  0,
-		CardType:   0,
+		CardType:   10,
 	},
 	6: {
 		Id:         6,
 		Cost:       2699,
 		CheckCount: 5,
 		Remainder:  0,
-		CardType:   0,
+		CardType:   10,
 	},
 	7: {
 		Id:         7,
 		Cost:       4999,
 		CheckCount: 10,
 		Remainder:  0,
-		CardType:   0,
+		CardType:   10,
 	},
+}
+
+var MoneyToExaminationNameMap = map[float64]string{
+	300:  "套餐A",
+	500:  "套餐B",
+	1000: "套餐C",
+	2000: "套餐D",
+	569:  "套餐E",
+	2699: "套餐F",
+	4999: "套餐G",
 }

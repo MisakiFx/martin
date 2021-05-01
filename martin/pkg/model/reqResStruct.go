@@ -27,9 +27,10 @@ type GetExaminationInfoResp struct {
 }
 
 type ListExpenseCalendarResp struct {
-	Money      float64 `json:"money"`
-	Status     int     `json:"status"`
-	CreateTime string  `json:"create_time"`
+	Money           float64 `json:"money"`
+	Status          int     `json:"status"`
+	ExaminationName string  `json:"examination_name"`
+	CreateTime      string  `json:"create_time"`
 }
 
 type RefundExamination struct {
@@ -54,6 +55,7 @@ type ListCheckResp struct {
 
 type GetCheckResultResp struct {
 	BookingId     int64  `json:"booking_id"`
+	Projects      []int  `json:"projects"`
 	Internal      string `json:"internal"`
 	Surgery       string `json:"surgery"`
 	ENT           string `json:"ent"`
@@ -61,4 +63,8 @@ type GetCheckResultResp struct {
 	BloodGlucode  string `json:"blood_glucode"`
 	BloodFat      string `json:"blood_fat"`
 	RenalFunction string `json:"renal_function"`
+}
+
+type CancelCheckBookingReq struct {
+	BookingId int64 `json:"booking_id"`
 }

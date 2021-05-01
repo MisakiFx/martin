@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+	"strconv"
 	"time"
 
 	"go.uber.org/zap"
@@ -47,4 +48,10 @@ func PhoneNumberDesensitization(phoneNumber string) string {
 	prefix := phoneNumber[:3]
 	suffix := phoneNumber[7:]
 	return prefix + "xxxx" + suffix
+}
+
+func FloatRound(f float64, n int) float64 {
+	format := "%." + strconv.Itoa(n) + "f"
+	res, _ := strconv.ParseFloat(fmt.Sprintf(format, f), 64)
+	return res
 }

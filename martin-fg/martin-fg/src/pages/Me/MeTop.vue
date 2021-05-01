@@ -8,40 +8,40 @@
     </router-link>
     <div class="my-older">
       <div class="older-top">
-        <h3>我的体检</h3>
-        <span>查看全部 > </span>
+        <h3>我的钱包</h3>
+        <router-link tag="span" to="/expense">消费记录 > </router-link>
       </div>
       <div class="older-bottom">
         <div class="bottom-item">
-          <span>0.00元</span>
+          <span>{{userExamination.remainder}}元</span>
           <i></i>
           <span>余额</span>
         </div>
         <div class="bottom-item">
-          <span>7折</span>
+          <span>{{userExamination.card_type === 10 ? "无" : userExamination.card_type + "折"}}</span>
           <i></i>
           <span>权益卡</span>
         </div>
         <div class="bottom-item">
-          <span>5次</span>
+          <span>{{userExamination.check_count}}次</span>
           <i></i>
-          <span>全套体检</span>
+          <span>体检套餐</span>
         </div>
       </div>
     </div>
     <div class="setting">
-      <div class="setting-item">
+      <router-link tag="div" to="/check_booking" class="setting-item">
         <i class="itlike-2"></i>
         <span>体检预约</span>
-      </div>
-      <div class="setting-item">
+      </router-link>
+      <router-link tag="div" to="/checks" class="setting-item">
         <i class="itlike-1"></i>
-        <span>消费记录</span>
-      </div>
-      <div class="setting-item">
+        <span>我的体检</span>
+      </router-link>
+      <router-link tag="div" to="/refund" class="setting-item">
         <i class="itlike-3"></i>
-        <span>官方客服</span>
-      </div>
+        <span>余额退款</span>
+      </router-link>
     </div>
   </div>
 </template>
@@ -51,7 +51,10 @@
     export default {
       name: "MeTop",
       computed:{
-          ...mapState(['userInfo'])
+          ...mapState(['userInfo', 'userExamination'])
+      },
+      mounted() {
+        this.$store.dispatch('reqUserExamination', this.$store.state.userInfo.open_id)
       },
       filters:{
         phoneFormat(phone){

@@ -1,11 +1,11 @@
 <template>
-  <div class="shop-container" v-if="shopList.length > 0">
-    <ul class="shop-list">
-      <li class="shop-list-item" v-for="(shop, index) in shopList" :key="index">
+  <div class="expense-container" v-if="shopList.length > 0">
+    <ul class="check-list">
+      <li class="check-list-item" v-for="(shop, index) in shopList" :key="index">
         <img :src="shop.image_url" alt="" width="100%">
-        <h4 class="list-item-title">{{shop.title}}</h4>
+        <h4 class="item-time-label">{{shop.title}}</h4>
         <div class="list-item-bottom">
-          <span class="item-price">¥{{shop.price}}</span>
+          <span class="item-money">¥{{shop.price}}</span>
           <span class="item-buy">
             <button @click="clickBuy(index)">购买</button>
           </span>
@@ -17,16 +17,24 @@
 
 <script>
     import {mapState} from 'vuex'
-    import { MessageBox } from 'mint-ui';
+    import { MessageBox, Toast, Indicator} from 'mint-ui';
+    import {postBuyExamination} from '../../api'
     export default {
-        name: "HomeShopList",
-        computed:{
-          ...mapState(['shopList'])
-        },
-        methods: {
+      name: "HomeShopList",
+      computed:{
+        ...mapState(['shopList'])
+      },
+      methods: {
           async clickBuy(index = 0) {
-            MessageBox.confirm("是否确认购买?").then(action=>{
-
+            MessageBox.confirm("是否确认购买?").then(async action=>{
+              Indicator.open()
+              let result = await postBuyExamination({'examination_id':index + 1},{'open_id' : this.$store.state.userInfo.open_id})
+              Indicator.close()
+              if (result.code !== 0) {
+                Toast(result.msg)
+                return
+              }
+              Toast("购买成功")
             })
           }
         }
@@ -34,16 +42,16 @@
 </script>
 
 <style scoped lang="stylus" ref="stylesheet/stylus">
-  .shop-container
+  .expense-container
     padding-bottom 40px
     background-color: #f5f5f5
-    .shop-list
-      .shop-list-item
+    .check-list
+      .check-list-item
         margin-bottom 10px
         background-color: #fff
         display flex
         flex-direction column
-        .list-item-title
+        .item-time-label
           line-height 22px
           width 94%
           margin-left 3%
@@ -55,7 +63,7 @@
           flex-direction row
           justify-content space-around
           align-items center
-          .item-price
+          .item-money
             font-size 18px
             text-align center
             font-weight bolder

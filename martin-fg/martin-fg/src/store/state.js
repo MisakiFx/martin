@@ -1,6 +1,7 @@
 export default {
   userInfo:{},
   userOpenId:"123",
+  userExamination:{},
   shopList:[
     {
       "title":"【套餐A】充值300元 送9折权益卡",

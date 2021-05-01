@@ -31,11 +31,15 @@ func BuyExaminationService(req *model.BuyExaminationReq, openId string) (int, er
 	tx := dao.StartTransaction()
 	defer dao.ShutDownTransaction(tx)
 	//更新用户体检卡信息
+	cardType := examinationOld.UserCardType
+	if examination.CardType < cardType {
+		cardType = examination.CardType
+	}
 	effectRows, err := dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
 		UserId:         userInfo.ID,
 		UserCheckCount: examinationOld.UserCheckCount + examination.CheckCount,
 		UserRemainder:  examinationOld.UserRemainder + examination.Remainder,
-		UserCardType:   examination.CardType,
+		UserCardType:   cardType,
 		UpdateTime:     examinationOld.UpdateTime,
 	}, userInfo.ID)
 	if err != nil {
