@@ -4,7 +4,7 @@
     <h1 class="money">¥{{userExamination.remainder}}</h1>
   </div>
   <div class="refund-bottom">
-    <mt-field label="退款金额" placeholder="请输入退款金额" type="number" v-model=money :attr="{ maxlength: 10 }" @blur.native.capture="checkInputName" :state='state'></mt-field>
+    <mt-field label="退款金额" placeholder="请输入退款金额" type="number" v-model=money :attr="{ maxlength: 10 }" @blur.native.capture="checkInputName" :state=state></mt-field>
   </div>
   <div class="refund-button">
     <button @click="RefundMoney">退款</button>
@@ -32,6 +32,9 @@
           console.log(this.state);
         },
         async RefundMoney() {
+          if (!this.state) {
+            Toast('退款金额支持到小数点后两位')
+          }
           if (this.money <= 0) {
             Toast("退款金额不能小于等于0")
             return
@@ -40,7 +43,6 @@
             Toast("余额不足")
             return
           }
-          console.log(this.money);
           let result = await refundMoney({'money':this.money}, this.$store.state.userInfo.open_id)
           if (result.code !== 0) {
             Toast(result.msg)
@@ -54,7 +56,7 @@
       },
       data() {
         return {
-          money : 0,
+          money : '',
           state : false,
         }
       }
