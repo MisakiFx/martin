@@ -38,7 +38,7 @@ func BuyExaminationService(req *model.BuyExaminationReq, openId string) (int, er
 	effectRows, err := dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
 		UserId:         userInfo.ID,
 		UserCheckCount: examinationOld.UserCheckCount + examination.CheckCount,
-		UserRemainder:  examinationOld.UserRemainder + examination.Remainder,
+		UserRemainder:  tools.FloatRound(examinationOld.UserRemainder+examination.Remainder, 2),
 		UserCardType:   cardType,
 		UpdateTime:     examinationOld.UpdateTime,
 	}, userInfo.ID)
@@ -93,7 +93,7 @@ func GetExaminationInfoService(openId string) (*model.GetExaminationInfoResp, in
 	}, constant.StatusCodeSuccess, nil
 }
 
-func RefundExaminationService(req *model.RefundExamination, openId string) (int, error) {
+func RefundExaminationService(money float64, openId string) (int, error) {
 	userInfo, err := dao.GetUserInfoByOpenId(openId)
 	if err != nil {
 		tools.GetLogger().Errorf("service.RefundExaminationService->dao.GetUserInfoByOpenId error : %v", err)
@@ -110,14 +110,14 @@ func RefundExaminationService(req *model.RefundExamination, openId string) (int,
 		tools.GetLogger().Errorf("service.RefundExaminationService->dao.GetUserExamination error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
-	if examination.UserRemainder < req.Money {
+	if examination.UserRemainder < money {
 		return constant.StatusCodeInputError, errors.New("余额不足")
 	}
 
 	effectRows, err := dao.UpdateUserExamination(tx, &model.GuardianHealthExaminationInfo{
 		UserId:         userInfo.ID,
 		UserCheckCount: examination.UserCheckCount,
-		UserRemainder:  examination.UserRemainder - req.Money,
+		UserRemainder:  tools.FloatRound(examination.UserRemainder-money, 2),
 		UserCardType:   examination.UserCardType,
 		UpdateTime:     time.Now(),
 	}, userInfo.ID)
@@ -134,7 +134,7 @@ func RefundExaminationService(req *model.RefundExamination, openId string) (int,
 	err = dao.CreateExpenseCalendar(tx, &model.GuardianExpenseCalendar{
 		ID:         tools.GenId(),
 		UserId:     userInfo.ID,
-		Money:      req.Money,
+		Money:      money,
 		Status:     constant.ExpenseStatusRefund,
 		CreateTime: time.Now(),
 		UpdateTime: time.Now(),

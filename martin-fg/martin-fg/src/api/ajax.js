@@ -24,6 +24,7 @@ export default function ajax(url = '', params = {}, headers = {}, type = 'GET') 
         })
       }
     } else if('POST' === type) {
+      console.log(params);
       if (Object.keys(headers).length === 0) {
         promise = axios.post(url, params)
       } else {

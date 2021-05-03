@@ -2,6 +2,9 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
+	"unicode/utf8"
 
 	"github.com/MisakiFx/martin/martin/pkg/service"
 
@@ -102,6 +105,32 @@ func RefundExamination(c *gin.Context) {
 		})
 		return
 	}
+	moneyArray := strings.Split(req.Money, ".")
+	if len(moneyArray) > 1 && utf8.RuneCountInString(moneyArray[1]) > 2 {
+		tools.GetLogger().Warnf("handler.RefundExamination money float >= 2")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "退款金额支持到小数点后两位",
+		})
+		return
+	}
+	moneyFloat, err := strconv.ParseFloat(req.Money, 64)
+	if err != nil {
+		tools.GetLogger().Warnf("handler.RefundExamination money parse error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	if moneyFloat <= 0 {
+		tools.GetLogger().Warnf("handler.RefundExamination money can not <= 0")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "退款金额不能小于等于0",
+		})
+		return
+	}
 	openIdInterface, ok := c.Get(constant.UserOpenIdContextKey)
 	openId, ok2 := openIdInterface.(string)
 	if !ok || !ok2 || openId == "" {
@@ -112,7 +141,7 @@ func RefundExamination(c *gin.Context) {
 		})
 		return
 	}
-	statusCode, err := service.RefundExaminationService(&req, openId)
+	statusCode, err := service.RefundExaminationService(moneyFloat, openId)
 	if statusCode != constant.StatusCodeSuccess {
 		tools.GetLogger().Errorf("handler.RefundExamination->service.RefundExaminationService error : %v", err)
 		c.JSON(http.StatusOK, gin.H{

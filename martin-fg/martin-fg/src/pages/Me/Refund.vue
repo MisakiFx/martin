@@ -1,23 +1,61 @@
 <template>
  <div class="refund">
   <div class="refund-head">
-    <h1 class="money">¥123</h1>
+    <h1 class="money">¥{{userExamination.remainder}}</h1>
   </div>
   <div class="refund-bottom">
-    <mt-field label="退款金额" placeholder="Input number" type="number" v-model="refundMoney"></mt-field>
+    <mt-field label="退款金额" placeholder="请输入退款金额" type="number" v-model=money :attr="{ maxlength: 10 }" @blur.native.capture="checkInputName" :state='state'></mt-field>
   </div>
   <div class="refund-button">
-    <button>退款</button>
+    <button @click="RefundMoney">退款</button>
   </div>
  </div>
 </template>
 
 <script>
+    import {mapState} from 'vuex'
+    import {Toast} from 'mint-ui'
+    import {refundMoney} from "../../api";
+
     export default {
       name: "Refund",
+      computed : {
+        ...mapState(['userExamination'])
+      },
+      mounted() {
+        this.$store.dispatch('reqUserExamination', this.$store.state.userInfo.open_id)
+      },
+      methods : {
+        checkInputName() {
+          let regex = /^[0-9]+(.[0-9]{2})?$/
+          this.state = regex.test(this.money);
+          console.log(this.state);
+        },
+        async RefundMoney() {
+          if (this.money <= 0) {
+            Toast("退款金额不能小于等于0")
+            return
+          }
+          if (this.money > this.$store.state.userExamination.remainder) {
+            Toast("余额不足")
+            return
+          }
+          console.log(this.money);
+          let result = await refundMoney({'money':this.money}, this.$store.state.userInfo.open_id)
+          if (result.code !== 0) {
+            Toast(result.msg)
+            return
+          }
+          Toast('退款成功')
+          setTimeout(()=>{
+            this.$router.replace('/me')
+          }, 1000)
+        }
+      },
       data() {
         return {
-          refundMoney : 0
+          money : 0,
+          state : false,
         }
       }
     }

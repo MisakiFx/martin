@@ -34,7 +34,7 @@ type ListExpenseCalendarResp struct {
 }
 
 type RefundExamination struct {
-	Money float64 `json:"money"`
+	Money string `json:"money"`
 }
 type BookingCheckReq struct {
 	CheckProject []int  `json:"check_project"`
