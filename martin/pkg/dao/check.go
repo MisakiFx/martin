@@ -87,7 +87,7 @@ func ListCheck(userId int64, page, size int) (int64, []model.GuardianBookingInfo
 	query := mysql.GetMysqlClient()
 	var bookingInfo model.GuardianBookingInfo
 	result := make([]model.GuardianBookingInfo, 0)
-	query = query.Table(bookingInfo.TableName()).Where("user_id = ?", userId).Order("create_time")
+	query = query.Table(bookingInfo.TableName()).Where("user_id = ?", userId).Order("create_time DESC")
 	var count int64
 	err := query.Count(&count).Error
 	if err != nil {
@@ -155,4 +155,12 @@ func GetCheckInfo(bookingId, userId int64) (*model.GuardianBookingInfo, error) {
 		return nil, err
 	}
 	return &res, nil
+}
+
+func UpdateCheckStatus(bookingId int64, status int) error {
+	query := mysql.GetMysqlClient()
+	err := query.Table((&model.GuardianBookingInfo{}).TableName()).Where("id = ?", bookingId).Updates(map[string]interface{}{
+		"status": status,
+	}).Error
+	return err
 }

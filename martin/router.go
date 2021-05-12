@@ -28,21 +28,30 @@ func customizeRegister(r *gin.Engine) {
 		user.POST("/update", middleware.Auth, handler.UpdateUserInfo)
 	}
 	examination := api.Group("/examination")
+	examination.Use(middleware.Auth)
 	{
-		examination.POST("/buy", middleware.Auth, handler.BuyExamination)
-		examination.POST("/refund", middleware.Auth, handler.RefundExamination)
-		examination.GET("/info", middleware.Auth, handler.GetExaminationInfo)
+		examination.POST("/buy", handler.BuyExamination)
+		examination.POST("/refund", handler.RefundExamination)
+		examination.GET("/info", handler.GetExaminationInfo)
 	}
 	calendar := api.Group("/calendar")
+	calendar.Use(middleware.Auth)
 	{
-		calendar.GET("/list", middleware.Auth, handler.ListExpenseCalendar)
+		calendar.GET("/list", handler.ListExpenseCalendar)
 	}
 	checking := api.Group("/check")
+	checking.Use(middleware.Auth)
 	{
-		checking.POST("/booking", middleware.Auth, handler.BookingCheck)
-		checking.POST("/cancel", middleware.Auth, handler.CancelBookingCheck)
-		checking.GET("/list", middleware.Auth, handler.ListCheck)
-		checking.GET("/result/:id", middleware.Auth, handler.GetCheckResult)
+		checking.POST("/booking", handler.BookingCheck)
+		checking.POST("/cancel", handler.CancelBookingCheck)
+		checking.GET("/list", handler.ListCheck)
+		checking.GET("/result/:id", handler.GetCheckResult)
+	}
+	admin := api.Group("/admin")
+	admin.Use(middleware.Auth, middleware.AdminAuth)
+	{
+		admin.POST("/check_start", handler.CheckStart)
+		admin.POST("/check_finish", handler.CheckFinish)
 	}
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

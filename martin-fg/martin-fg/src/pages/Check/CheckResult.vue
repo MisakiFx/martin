@@ -84,13 +84,13 @@
             return
           }
           this.checkResult = result.data.result
-          this.checkResult.internal = this.checkResult.internal ? this.checkResult.internal : '请耐心等待体检结果'
-          this.checkResult.surgery = this.checkResult.surgery ? this.checkResult.surgery : '请耐心等待体检结果'
-          this.checkResult.ent = this.checkResult.ent ? this.checkResult.ent : '请耐心等待体检结果'
-          this.checkResult.sgpt = this.checkResult.sgpt ? this.checkResult.sgpt : '请耐心等待体检结果'
-          this.checkResult.blood_glucode = this.checkResult.blood_glucode ? this.checkResult.blood_glucode : '请耐心等待体检结果'
-          this.checkResult.blood_fat = this.checkResult.blood_fat ? this.checkResult.blood_fat : '请耐心等待体检结果'
-          this.checkResult.renal_function = this.checkResult.renal_function ? this.checkResult.renal_function : '请耐心等待体检结果'
+          this.checkResult.internal = this.checkResult.internal ? this.checkResult.internal : '无体检结果'
+          this.checkResult.surgery = this.checkResult.surgery ? this.checkResult.surgery : '无体检结果'
+          this.checkResult.ent = this.checkResult.ent ? this.checkResult.ent : '无体检结果'
+          this.checkResult.sgpt = this.checkResult.sgpt ? this.checkResult.sgpt : '无体检结果'
+          this.checkResult.blood_glucode = this.checkResult.blood_glucode ? this.checkResult.blood_glucode : '无体检结果'
+          this.checkResult.blood_fat = this.checkResult.blood_fat ? this.checkResult.blood_fat : '无体检结果'
+          this.checkResult.renal_function = this.checkResult.renal_function ? this.checkResult.renal_function : '无体检结果'
         }
       },
       data() {

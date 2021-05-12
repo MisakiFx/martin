@@ -207,3 +207,43 @@ func CancelBookingCheck(c *gin.Context) {
 		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
 	})
 }
+
+func CheckStart(c *gin.Context) {
+	tools.GetLogger().Infof("handler.CheckStart path : %v", c.Request.URL.String())
+	var req model.CheckStartReq
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.CheckStart parse req error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	if req.PhoneNumber == "" {
+		tools.GetLogger().Errorf("handler.CheckStart phone number is empty")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "用户电话号不能为空",
+		})
+		return
+	}
+	code, err := service.CheckStart(&req)
+	if code != constant.StatusCodeSuccess && err != nil {
+		tools.GetLogger().Errorf("handler.CheckStart->service.CheckStart error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": code,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+	})
+}
+
+func CheckFinish(c *gin.Context) {
+	tools.GetLogger().Infof("handler.CheckFinish path : %v", c.Request.URL.String())
+
+}

@@ -2,6 +2,7 @@ package dao
 
 import (
 	"github.com/MisakiFx/martin/martin/pkg/connection/mysql"
+	"github.com/MisakiFx/martin/martin/pkg/constant"
 	"github.com/MisakiFx/martin/martin/pkg/model"
 	"github.com/jinzhu/gorm"
 )
@@ -28,6 +29,32 @@ func GetUserInfoByOpenId(openId string) (*model.GuardianUserInfo, error) {
 	query := mysql.GetMysqlClient()
 	var user model.GuardianUserInfo
 	err := query.Table(user.TableName()).Where("open_id = ?", openId).First(&user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func CheckUserAdmin(openId string) (*model.GuardianUserInfo, error) {
+	query := mysql.GetMysqlClient()
+	var user model.GuardianUserInfo
+	err := query.Table(user.TableName()).Where("open_id = ? AND user_power = ?", openId, constant.UserPowerAdmin).First(&user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func GetUserInfoByPhoneNumber(phoneNumber string) (*model.GuardianUserInfo, error) {
+	query := mysql.GetMysqlClient()
+	var user model.GuardianUserInfo
+	err := query.Table(user.TableName()).Where("phone_number = ?", phoneNumber).First(&user).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil

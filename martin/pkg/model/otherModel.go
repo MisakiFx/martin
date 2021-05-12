@@ -12,6 +12,7 @@ type CheckProject struct {
 	Id    int
 	Name  string
 	Money float64
+	Place string
 }
 
 var CheckProjectMap = map[int]*CheckProject{
@@ -19,36 +20,43 @@ var CheckProjectMap = map[int]*CheckProject{
 		Id:    1,
 		Name:  "内科",
 		Money: 30,
+		Place: "2楼扶梯东侧内科",
 	},
 	2: {
 		Id:    2,
 		Name:  "外科",
 		Money: 30,
+		Place: "2楼扶梯西侧外科",
 	},
 	3: {
 		Id:    3,
 		Name:  "耳鼻喉科",
 		Money: 30,
+		Place: "3楼扶梯左侧耳鼻喉科",
 	},
 	4: {
 		Id:    4,
 		Name:  "肝功",
 		Money: 199,
+		Place: "3楼扶梯正对肝功/肾功科",
 	},
 	5: {
 		Id:    5,
 		Name:  "血糖",
 		Money: 30,
+		Place: "3楼扶梯右侧化验科",
 	},
 	6: {
 		Id:    6,
 		Name:  "血脂",
 		Money: 30,
+		Place: "3楼扶梯右侧化验科",
 	},
 	7: {
 		Id:    7,
 		Name:  "肾功",
 		Money: 269,
+		Place: "3楼扶梯正对肝功/肾功科",
 	},
 }
 

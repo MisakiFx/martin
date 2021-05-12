@@ -68,3 +68,7 @@ type GetCheckResultResp struct {
 type CancelCheckBookingReq struct {
 	BookingId int64 `json:"booking_id"`
 }
+
+type CheckStartReq struct {
+	PhoneNumber string `json:"phone_number"`
+}

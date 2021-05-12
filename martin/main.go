@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/MisakiFx/martin/martin/pkg/dependencies"
+
 	"github.com/MisakiFx/martin/martin/pkg/tools"
 
 	"github.com/MisakiFx/martin/martin/pkg/connection"
@@ -13,6 +15,7 @@ import (
 func Init() {
 	tools.Init()
 	connection.Init()
+	dependencies.Init()
 }
 
 func main() {

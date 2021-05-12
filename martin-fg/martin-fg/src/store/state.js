@@ -1,6 +1,6 @@
 export default {
   userInfo:{},
-  userOpenId:"123",
+  userOpenId:"oSjQ26_7jlYQzA2b4NAWIBbF7RJ4",
   userExamination:{},
   shopList:[
     {

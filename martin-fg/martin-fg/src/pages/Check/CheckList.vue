@@ -6,17 +6,20 @@
         infinite-scroll-disabled="moreShowBool"
         infinite-scroll-distance="0">
       <li class="check-list-item" v-for="(check, index) in checks" :key="index">
-        <router-link tag="div" class="check-list-item" :to="'/check_result/' + check.id">
-          <div class="list-item-head">
+        <div class="check-list-item">
+          <router-link tag="div" class="list-item-head" :to="'/check_result/' + check.id">
             <h4 class="item-time-label">预约时间</h4>
             <h4 class="item-time-value">{{check.start_time}}</h4>
-          </div>
+          </router-link>
           <div class="list-item-bottom">
             <span class="item-project">{{check.check_project | projectFilter}}</span>
             <span class="item-money">付款:{{check.pay_check_count !== 0 ? '体检套餐' : '¥' + check.pay_reminder}}</span>
-            <button class="item-button" v-show="check.status === 0" @click="cancelCheck(check.id)">取消预约</button>
+            <button class="item-button" v-if="isButtonShow(check.start_time)" @click="cancelCheck(check.id)">取消预约</button>
+            <span class="item-span" v-else-if="check.status === 0">未开始</span>
+            <span class="item-span" v-else-if="check.status === 8">已结束</span>
+            <span class="item-span" v-else >进行中</span>
           </div>
-        </router-link>
+        </div>
       </li>
     </ul>
   </div>
@@ -25,6 +28,7 @@
 <script>
     import {getUserCheckList, postCancelCheck} from "../../api";
     import {MessageBox, Toast} from "mint-ui";
+    import moment from 'moment'
 
     export default {
       name: "CheckList",
@@ -68,6 +72,10 @@
         }
       },
       methods:{
+        isButtonShow(startTime = "") {
+          let now = moment()
+          return now.add(6, 'h').unix() <= moment(startTime, "YYYY-MM-DD HH-mm-ss").unix();
+        },
         async scrollMore() {
           if (this.allLoaded === true) {
             return
@@ -160,6 +168,9 @@
             border none
             color #fff
             border-radius 10px
+          .item-span
+            position absolute
+            right 10px
     .expense-tip
       text-align center
       color #9b9898

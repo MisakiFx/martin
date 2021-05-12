@@ -32,11 +32,12 @@
           console.log(this.state);
         },
         async RefundMoney() {
-          if (!this.state) {
-            Toast('退款金额支持到小数点后两位')
-          }
           if (this.money <= 0) {
             Toast("退款金额不能小于等于0")
+            return
+          }
+          if (!this.state) {
+            Toast('退款金额支持到小数点后两位')
             return
           }
           if (this.money > this.$store.state.userExamination.remainder) {

@@ -2,6 +2,7 @@ package constant
 
 const TimeLocation string = "Asia/Shanghai"
 const TimeFormatString string = "2006-01-02 15:04:05"
+const TimeFormatString2 string = "2006年01月02日 15:04:05"
 
 const (
 	Token     = "Misaki"
@@ -44,4 +45,11 @@ const BookCheckMaxCount = 200
 const (
 	PayTypeRemainder  = 1
 	PayTypeCheckCount = 2
+)
+
+const CheckEndStatus = 8
+
+const (
+	TemplateIdCheckWillStart = "rVykD4brIHuiZuELLkK45qdqSb6MSDQYyT1pqWDA_Mc"
+	TemplateIdCheckStart     = "vKglW8YhFsUoB-PSyzGtP-0okYCrPZlnIwByb6gpybg"
 )

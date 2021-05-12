@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/MisakiFx/martin/martin/pkg/dependencies"
+
 	"github.com/MisakiFx/martin/martin/pkg/constant"
 	"github.com/MisakiFx/martin/martin/pkg/dao"
 	"github.com/MisakiFx/martin/martin/pkg/model"
@@ -308,8 +310,13 @@ func CancelBookingCheckService(openId string, bookingId int64) (int, error) {
 	//验证
 	if bookingInfo.Status != 0 {
 		tx.Rollback()
-		tools.GetLogger().Errorf("service.CancelBookingCheckService check is start")
+		tools.GetLogger().Debugf("service.CancelBookingCheckService check is start")
 		return constant.StatusCodeInputError, errors.New("体检已经开始不能取消")
+	}
+	if time.Now().Add(time.Hour*6).Unix() > bookingInfo.StartTime.Unix() {
+		tx.Rollback()
+		tools.GetLogger().Debugf("service.CancelBookingCheckService start time is less than 6 hour")
+		return constant.StatusCodeInputError, errors.New("距离体检时间开始小于6小时，不能取消")
 	}
 	var pay model.BookingPay
 	err = json.Unmarshal([]byte(bookingInfo.Pay), &pay)
@@ -363,5 +370,66 @@ func CancelBookingCheckService(openId string, bookingId int64) (int, error) {
 		return constant.StatusCodeInputError, errors.New("操作太频繁,请稍后重试")
 	}
 	tx.Commit()
+	return constant.StatusCodeSuccess, nil
+}
+
+func CheckStart(req *model.CheckStartReq) (int, error) {
+	userInfo, err := dao.GetUserInfoByPhoneNumber(req.PhoneNumber)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckStart->dao.GetUserInfoByPhoneNumber error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if userInfo == nil {
+		tools.GetLogger().Debugf("service.CheckStart->dao.GetUserInfoByPhoneNumber do not found customer")
+		return constant.StatusCodeInputError, errors.New("未找到对应用户")
+	}
+	check, err := dao.GetStartedBookingCheck(nil, userInfo.ID)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckStart->dao.GetUserInfoByPhoneNumber error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if check == nil {
+		tools.GetLogger().Debugf("service.CheckStart->dao.GetStartedBookingCheck do not found started check")
+		return constant.StatusCodeInputError, errors.New("未找到用户有效的体检信息")
+	}
+	if check.StartTime.Unix() > time.Now().Unix() {
+		tools.GetLogger().Errorf("service.CheckStart check is not start")
+		return constant.StatusCodeInputError, errors.New("预约的体检未开始")
+	}
+	if check.EndTime.Unix() <= time.Now().Unix() {
+		tools.GetLogger().Errorf("service.CheckStart check is end")
+		return constant.StatusCodeInputError, errors.New("预约的体检已结束")
+	}
+	projects := strings.Split(check.CheckProject, ",")
+	newStatus := 0
+	if check.Status == 0 {
+		pro, _ := strconv.ParseInt(projects[0], 10, 64)
+		newStatus = int(pro)
+	} else {
+		for i, pro := range projects {
+			proInt, _ := strconv.ParseInt(pro, 10, 64)
+			if int(proInt) != check.Status {
+				continue
+			}
+			if i == len(projects)-1 {
+				newStatus = constant.CheckEndStatus
+			} else {
+				proNextInt, _ := strconv.ParseInt(projects[i+1], 10, 64)
+				newStatus = int(proNextInt)
+			}
+		}
+	}
+	err = dao.UpdateCheckStatus(check.ID, newStatus)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckStart->dao.UpdateCheckStatus error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, map[string]string{
+		"project": model.CheckProjectMap[newStatus].Name,
+		"place":   model.CheckProjectMap[newStatus].Place,
+	})
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckStart send template msg error : %v", err)
+	}
 	return constant.StatusCodeSuccess, nil
 }
