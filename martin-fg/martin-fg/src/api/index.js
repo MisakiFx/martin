@@ -40,3 +40,12 @@ export const getCheckResult = (openId = '', bookingId = 0)=>ajax(BASE_URL + '/ch
 
 //退款
 export const refundMoney = (refund= {}, openId = '')=>ajax(BASE_URL + '/examination/refund', refund, {'open_id' : openId}, 'POST')
+
+//判断用户是不是管理员
+export const checkAdmin = (openId = '')=>ajax(BASE_URL + '/admin/', {}, {'open_id' : openId})
+
+//体检登记
+export const checkStart = (openId = '', phoneNumber = '')=>ajax(BASE_URL + '/admin/check_start', {'phone_number' : phoneNumber}, {'open_id' : openId}, 'POST')
+
+//体检单项结束
+export const checkFinish = (params = {}, openId = '')=>ajax(BASE_URL + '/admin/check_finish', params, {'open_id' : openId}, 'POST')

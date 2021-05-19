@@ -72,3 +72,14 @@ type CancelCheckBookingReq struct {
 type CheckStartReq struct {
 	PhoneNumber string `json:"phone_number"`
 }
+
+type CheckFinishReq struct {
+	PhoneNumber   string `json:"phone_number"`
+	FinishProject int    `json:"finish_project"`
+}
+
+type CheckResultReq struct {
+	PhoneNumber  string `json:"phone_number"`
+	CheckProject int    `json:"check_project"`
+	CheckResult  string `json:"check_result"`
+}

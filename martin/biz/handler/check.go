@@ -245,5 +245,94 @@ func CheckStart(c *gin.Context) {
 
 func CheckFinish(c *gin.Context) {
 	tools.GetLogger().Infof("handler.CheckFinish path : %v", c.Request.URL.String())
+	var req model.CheckFinishReq
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.CheckFinish parse req error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	if req.PhoneNumber == "" {
+		tools.GetLogger().Errorf("handler.CheckFinish phone number is empty")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "用户电话号不能为空",
+		})
+		return
+	}
+	if req.FinishProject == 0 {
+		tools.GetLogger().Errorf("handler.CheckFinish FinishProject is empty")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "检查项不能为空",
+		})
+		return
+	}
+	code, err := service.CheckFinish(&req)
+	if code != constant.StatusCodeSuccess && err != nil {
+		tools.GetLogger().Errorf("handler.CheckFinish->service.CheckFinish error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": code,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+	})
+}
 
+func CheckResult(c *gin.Context) {
+	tools.GetLogger().Infof("handler.CheckResult path : %v", c.Request.URL.String())
+	var req model.CheckResultReq
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		tools.GetLogger().Errorf("handler.CheckFinish parse req error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  constant.StatusCodeMessageMap[constant.StatusCodeInputError],
+		})
+		return
+	}
+	if req.PhoneNumber == "" {
+		tools.GetLogger().Errorf("handler.CheckResult phone number is empty")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "用户电话号不能为空",
+		})
+		return
+	}
+	if req.CheckProject == 0 {
+		tools.GetLogger().Errorf("handler.CheckResult FinishProject is empty")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "检查项不能为空",
+		})
+		return
+	}
+	if req.CheckResult == "" {
+		tools.GetLogger().Errorf("handler.CheckResult check result is empty")
+		c.JSON(http.StatusOK, gin.H{
+			"code": constant.StatusCodeInputError,
+			"msg":  "检查结果不能为空",
+		})
+		return
+	}
+	statusCode, err := service.CheckResult(&req)
+	if statusCode != constant.StatusCodeSuccess {
+		tools.GetLogger().Errorf("handler.CheckResult->service.CheckResult error : %v", err)
+		c.JSON(http.StatusOK, gin.H{
+			"code": statusCode,
+			"msg":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+	})
 }

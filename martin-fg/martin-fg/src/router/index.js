@@ -11,6 +11,9 @@ import CheckBooking from "../pages/Check/CheckBooking";
 import CheckList from "../pages/Check/CheckList";
 import CheckResult from "../pages/Check/CheckResult";
 import Refund from "../pages/Me/Refund";
+import AdminTop from "../pages/Admin/AdminTop";
+import CheckStart from "../pages/Admin/CheckStart";
+import CheckFinish from "../pages/Admin/CheckFinish";
 
 const originalPush = VueRouter.prototype.push
 
@@ -39,6 +42,9 @@ export default new VueRouter({
     {path: '/checks', component: CheckList},
     {path: '/check_result/:id', component: CheckResult},
     {path: '/refund', component: Refund},
+    {path: '/admin/top', component: AdminTop},
+    {path: '/admin/check_start', component: CheckStart},
+    {path: '/admin/check_finish', component: CheckFinish},
     {path: '/', redirect: '/home'}
   ]
 });

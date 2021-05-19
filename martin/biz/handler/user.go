@@ -233,3 +233,11 @@ func UpdateUserInfo(c *gin.Context) {
 		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
 	})
 }
+
+func CheckAdmin(c *gin.Context) {
+	tools.GetLogger().Infof("handler.UpdateUserInfo url : %v", c.Request.URL.String())
+	c.JSON(http.StatusOK, gin.H{
+		"code": constant.StatusCodeSuccess,
+		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],
+	})
+}

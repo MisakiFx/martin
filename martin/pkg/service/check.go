@@ -406,6 +406,57 @@ func CheckStart(req *model.CheckStartReq) (int, error) {
 		pro, _ := strconv.ParseInt(projects[0], 10, 64)
 		newStatus = int(pro)
 	} else {
+		tools.GetLogger().Debugf("check status != 0")
+		return constant.StatusCodeInputError, errors.New("体检已经登记，无需重复登记")
+	}
+	err = dao.UpdateCheckStatus(check.ID, newStatus)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckStart->dao.UpdateCheckStatus error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, map[string]string{
+		"project": model.CheckProjectMap[newStatus].Name,
+		"place":   model.CheckProjectMap[newStatus].Place,
+	})
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckStart send template msg error : %v", err)
+	}
+	return constant.StatusCodeSuccess, nil
+}
+
+func CheckFinish(req *model.CheckFinishReq) (int, error) {
+	userInfo, err := dao.GetUserInfoByPhoneNumber(req.PhoneNumber)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckFinish->dao.GetUserInfoByPhoneNumber error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if userInfo == nil {
+		tools.GetLogger().Debugf("service.CheckFinish->dao.GetUserInfoByPhoneNumber do not found customer")
+		return constant.StatusCodeInputError, errors.New("未找到对应用户")
+	}
+	check, err := dao.GetStartedBookingCheck(nil, userInfo.ID)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckFinish->dao.GetUserInfoByPhoneNumber error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if check == nil {
+		tools.GetLogger().Debugf("service.CheckFinish->dao.GetStartedBookingCheck do not found started check")
+		return constant.StatusCodeInputError, errors.New("未找到用户有效的体检信息")
+	}
+	if check.StartTime.Unix() > time.Now().Unix() {
+		tools.GetLogger().Errorf("service.CheckFinish check is not start")
+		return constant.StatusCodeInputError, errors.New("预约的体检未开始")
+	}
+	if check.Status != req.FinishProject {
+		tools.GetLogger().Debugf("service.CheckFinish status != req.FinishProject")
+		return constant.StatusCodeInputError, errors.New("结束项目与体检项目不符")
+	}
+	projects := strings.Split(check.CheckProject, ",")
+	newStatus := 0
+	if check.Status == 0 {
+		tools.GetLogger().Debugf("service.CheckFinish status == 0")
+		return constant.StatusCodeInputError, errors.New("体检未登记，请先进行登记")
+	} else {
 		for i, pro := range projects {
 			proInt, _ := strconv.ParseInt(pro, 10, 64)
 			if int(proInt) != check.Status {
@@ -421,15 +472,62 @@ func CheckStart(req *model.CheckStartReq) (int, error) {
 	}
 	err = dao.UpdateCheckStatus(check.ID, newStatus)
 	if err != nil {
-		tools.GetLogger().Errorf("service.CheckStart->dao.UpdateCheckStatus error : %v", err)
+		tools.GetLogger().Errorf("service.CheckFinish->dao.UpdateCheckStatus error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if newStatus == constant.CheckEndStatus {
+		return constant.StatusCodeSuccess, nil
 	}
 	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, map[string]string{
 		"project": model.CheckProjectMap[newStatus].Name,
 		"place":   model.CheckProjectMap[newStatus].Place,
 	})
 	if err != nil {
-		tools.GetLogger().Errorf("service.CheckStart send template msg error : %v", err)
+		tools.GetLogger().Errorf("service.CheckFinish send template msg error : %v", err)
+	}
+	return constant.StatusCodeSuccess, nil
+}
+
+func CheckResult(req *model.CheckResultReq) (int, error) {
+	userInfo, err := dao.GetUserInfoByPhoneNumber(req.PhoneNumber)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckResult->dao.GetUserInfoByPhoneNumber error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if userInfo == nil {
+		tools.GetLogger().Debugf("service.CheckResult->dao.GetUserInfoByPhoneNumber do not found customer")
+		return constant.StatusCodeInputError, errors.New("未找到对应用户")
+	}
+	bookingInfo, err := dao.GetLastCheckedProjectBooking(userInfo.ID, req.CheckProject)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckResult->dao.GetLastCheckedProjectBooking error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
+	if bookingInfo == nil {
+		tools.GetLogger().Debugf("service.CheckResult->dao.GetLastCheckedProjectBooking do not found finished check")
+		return constant.StatusCodeInputError, errors.New("未找到用户有效的体检信息")
+	}
+	result := &model.GuardianCheckResult{}
+	switch req.CheckProject {
+	case 1:
+		result.Internal = req.CheckResult
+	case 2:
+		result.Surgery = req.CheckResult
+	case 3:
+		result.Ent = req.CheckResult
+	case 4:
+		result.Sgpt = req.CheckResult
+	case 5:
+		result.BloodGlucode = req.CheckResult
+	case 6:
+		result.BloodFat = req.CheckResult
+	case 7:
+		result.RenalFunction = req.CheckResult
+	}
+	err = dao.UpdateCheckResult(bookingInfo.ID, result)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckResult->dao.UpdateCheckResult error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
 	return constant.StatusCodeSuccess, nil
 }

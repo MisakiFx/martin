@@ -50,8 +50,10 @@ func customizeRegister(r *gin.Engine) {
 	admin := api.Group("/admin")
 	admin.Use(middleware.Auth, middleware.AdminAuth)
 	{
+		admin.GET("/", handler.CheckAdmin)
 		admin.POST("/check_start", handler.CheckStart)
 		admin.POST("/check_finish", handler.CheckFinish)
+		admin.POST("/check_result", handler.CheckResult)
 	}
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
