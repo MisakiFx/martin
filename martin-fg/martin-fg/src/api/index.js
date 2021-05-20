@@ -1,6 +1,6 @@
 import ajax from './ajax'
 
-const BASE_URL= 'http://localhost:8080/guardian/api'
+const BASE_URL= 'http://70cbb78920a9.ngrok.io/guardian/api'
 
 //获取用户信息
 export const getUserInfo = (openId = '')=>ajax(BASE_URL + '/user/info', {}, {'open_id':openId})
@@ -49,3 +49,6 @@ export const checkStart = (openId = '', phoneNumber = '')=>ajax(BASE_URL + '/adm
 
 //体检单项结束
 export const checkFinish = (params = {}, openId = '')=>ajax(BASE_URL + '/admin/check_finish', params, {'open_id' : openId}, 'POST')
+
+//登记体检结果
+export const checkResult = (params = {}, openId = '')=>ajax(BASE_URL + '/admin/check_result', params, {'open_id' : openId}, 'POST')

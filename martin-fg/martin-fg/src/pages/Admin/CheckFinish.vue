@@ -1,12 +1,12 @@
 <template>
   <div class="check-finish">
     <div class="check-head">
-      体检登记
+      体检单项结束
     </div>
     <div class="check-field">
       <mt-field label="手机号" placeholder="请输入用户手机号" type="tel" v-model="phone"></mt-field>
       <mt-radio
-        title="请选择体检日期(仅支持未来三天内预约)"
+        title="请选择体检项目"
         v-model="finishProject"
         :options="finishProjectOptions">
       </mt-radio>

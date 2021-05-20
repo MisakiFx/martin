@@ -52,4 +52,5 @@ const CheckEndStatus = 8
 const (
 	TemplateIdCheckWillStart = "rVykD4brIHuiZuELLkK45qdqSb6MSDQYyT1pqWDA_Mc"
 	TemplateIdCheckStart     = "vKglW8YhFsUoB-PSyzGtP-0okYCrPZlnIwByb6gpybg"
+	TemplateIdCheckAllFinish = "bIthJ8Vvf2YZ_boacnmaVw5OlBg5veqxBO9j9IY8KBE"
 )

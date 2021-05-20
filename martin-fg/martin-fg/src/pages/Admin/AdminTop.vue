@@ -5,7 +5,7 @@
     </div>
     <router-link tag="button" to="/admin/check_start">体检登记</router-link>
     <router-link tag="button" to="/admin/check_finish">单项体检结束</router-link>
-    <router-link tag="button" to="/login">体检结果登记</router-link>
+    <router-link tag="button" to="/admin/check_result">体检结果登记</router-link>
   </div>
 </template>
 

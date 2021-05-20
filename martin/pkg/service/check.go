@@ -476,12 +476,13 @@ func CheckFinish(req *model.CheckFinishReq) (int, error) {
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
 	if newStatus == constant.CheckEndStatus {
-		return constant.StatusCodeSuccess, nil
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckAllFinish, map[string]string{})
+	} else {
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, map[string]string{
+			"project": model.CheckProjectMap[newStatus].Name,
+			"place":   model.CheckProjectMap[newStatus].Place,
+		})
 	}
-	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, map[string]string{
-		"project": model.CheckProjectMap[newStatus].Name,
-		"place":   model.CheckProjectMap[newStatus].Place,
-	})
 	if err != nil {
 		tools.GetLogger().Errorf("service.CheckFinish send template msg error : %v", err)
 	}
