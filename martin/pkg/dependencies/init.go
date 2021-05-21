@@ -6,7 +6,7 @@ import (
 	"github.com/MisakiFx/martin/martin/pkg/tools"
 )
 
-var AccessToken string = "45_88lwxds_AdA8y3R2eb2PSrekI6LyAlEktXgrIivCESsiZq_qNOIrnL5Q7lgo9E34yp0igt3RPr0pEbdEa5R9FRbQh6ygyWKHg7w3jYd69DZEGtIjCeyKehuJPJcYEWXAfuGoe4w0B-el8uoHEFIdAJALMP"
+var AccessToken string = "45_yIIZcqSkjEUbFdvaYdYvvH9a3jnYIewV8et3eqv2QDTbTN40pQmQyOMP1UeW7KOtalJW5Y4p6DOHnSwF_x1NIZjrB5E_HlOi5q2ykT0jVB_g0EdW9UWny5yG8CDWPUEe6J_GK8If2TRBPGRjZAYhADATUS"
 
 func getAccessTokenInit() {
 	//ticker := time.NewTicker(time.Minute * 110)

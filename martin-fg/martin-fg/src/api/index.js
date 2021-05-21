@@ -1,6 +1,6 @@
 import ajax from './ajax'
 
-const BASE_URL= 'http://70cbb78920a9.ngrok.io/guardian/api'
+const BASE_URL= 'http://127.0.0.1:8080/guardian/api'
 
 //获取用户信息
 export const getUserInfo = (openId = '')=>ajax(BASE_URL + '/user/info', {}, {'open_id':openId})
