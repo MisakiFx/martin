@@ -26,6 +26,10 @@ Vue.component(Spinner.name, Spinner);
 import { Field } from 'mint-ui';
 Vue.component(Field.name, Field);
 
+import VueDirectiveImagePreviewer from 'vue-directive-image-previewer'
+import 'vue-directive-image-previewer/dist/assets/style.css'
+Vue.use(VueDirectiveImagePreviewer)
+
 new Vue({
   el:'#app',
   router,

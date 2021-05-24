@@ -11,7 +11,7 @@ export default {
     {
       "title":"【套餐B】充值500元 送8折权益卡",
       "price":500,
-      "image_url":"../../../static/img/Plan/planB.jpg"
+      "image_url":"../../../static/img/Plan/planB.png"
     },
     {
       "title":"【套餐C】充值1000元 送7折权益卡",

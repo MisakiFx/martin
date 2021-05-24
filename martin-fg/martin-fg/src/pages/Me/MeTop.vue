@@ -25,7 +25,7 @@
         <div class="bottom-item">
           <span>{{userExamination.check_count}}次</span>
           <i></i>
-          <span>体检套餐</span>
+          <span>全套体检</span>
         </div>
       </div>
     </div>

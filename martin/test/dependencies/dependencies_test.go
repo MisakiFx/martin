@@ -45,19 +45,6 @@ func TestSendTemplateMessage(t *testing.T) {
 
 func TestBuildMenu(t *testing.T) {
 	body := `
-	{
-     "button":[
-     {	
-          "type":"view",
-          "name":"体检商城",
-		  "url" : "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=https://1dce62b7b2b1.ngrok.io/#/home&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
-      },
-	{
-          "type":"view",
-          "name":"体检预约",
-		  "url" : "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=https://1dce62b7b2b1.ngrok.io/#/home&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
-	}
-	]}
 	`
 	http.Post(fmt.Sprintf("https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%v", dependencies.AccessToken), "application/json", strings.NewReader(body))
 }

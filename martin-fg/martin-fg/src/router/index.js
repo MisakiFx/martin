@@ -15,6 +15,7 @@ import AdminTop from "../pages/Admin/AdminTop";
 import CheckStart from "../pages/Admin/CheckStart";
 import CheckFinish from "../pages/Admin/CheckFinish";
 import AdminCheckResult from "../pages/Admin/CheckResult";
+import Introduction from "../pages/Introduce/Introduction";
 
 const originalPush = VueRouter.prototype.push
 
@@ -47,6 +48,7 @@ export default new VueRouter({
     {path: '/admin/check_start', component: CheckStart},
     {path: '/admin/check_finish', component: CheckFinish},
     {path: '/admin/check_result', component: AdminCheckResult},
+    {path: '/introduce', component: Introduction},
     {path: '/', redirect: '/home'}
   ]
 });
