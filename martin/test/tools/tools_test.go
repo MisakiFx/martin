@@ -1,6 +1,7 @@
 package tools
 
 import (
+	xmlPack "encoding/xml"
 	"fmt"
 	"log"
 	"testing"
@@ -35,4 +36,14 @@ func TestCheckTime(t *testing.T) {
 	} else {
 		fmt.Printf("通过")
 	}
+}
+
+func TestXml(t *testing.T) {
+	res, err := xmlPack.Marshal(model.xml{
+		"123": "123",
+	})
+	if err != nil {
+		fmt.Printf("err : %v", err)
+	}
+	fmt.Printf("%v", string(res))
 }

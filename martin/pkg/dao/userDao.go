@@ -63,3 +63,12 @@ func GetUserInfoByPhoneNumber(phoneNumber string) (*model.GuardianUserInfo, erro
 	}
 	return &user, nil
 }
+
+func UpdateUserPower(openId string, power int) error {
+	query := mysql.GetMysqlClient()
+	var user model.GuardianUserInfo
+	err := query.Table(user.TableName()).Where("open_id = ?", openId).Updates(map[string]interface{}{
+		"user_power": power,
+	}).Error
+	return err
+}

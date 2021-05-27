@@ -414,7 +414,7 @@ func CheckStart(req *model.CheckStartReq) (int, error) {
 		tools.GetLogger().Errorf("service.CheckStart->dao.UpdateCheckStatus error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
-	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, map[string]string{
+	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, "http://10.227.31.2:8080/#/me?code=123", map[string]string{
 		"project": model.CheckProjectMap[newStatus].Name,
 		"place":   model.CheckProjectMap[newStatus].Place,
 	})
@@ -476,9 +476,9 @@ func CheckFinish(req *model.CheckFinishReq) (int, error) {
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
 	if newStatus == constant.CheckEndStatus {
-		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckAllFinish, map[string]string{})
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckAllFinish, "http://10.227.31.2:8080/#/me?code=123", map[string]string{})
 	} else {
-		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, map[string]string{
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, "http://10.227.31.2:8080/#/me?code=123", map[string]string{
 			"project": model.CheckProjectMap[newStatus].Name,
 			"place":   model.CheckProjectMap[newStatus].Place,
 		})

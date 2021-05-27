@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 
+	"github.com/MisakiFx/martin/martin/pkg/service"
+
 	"github.com/MisakiFx/martin/martin/pkg/tools"
 
 	"github.com/MisakiFx/martin/martin/pkg/constant"
@@ -31,6 +33,6 @@ func ServicePost(c *gin.Context) {
 		})
 		return
 	}
-	tools.GetLogger().Infof("input %v", input)
-	c.String(http.StatusOK, "Success")
+	_ = service.ServicePost(input)
+	c.String(http.StatusOK, "success")
 }

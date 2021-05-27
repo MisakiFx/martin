@@ -47,11 +47,14 @@ func GetOpenIdByCode(code string) (string, error) {
 	return accessToken.OpenId, nil
 }
 
-func SendTemplateMessage(openId string, templateId string, templateValue map[string]string) error {
+func SendTemplateMessage(openId, templateId, url string, templateValue map[string]string) error {
 	bodyMap := make(map[string]interface{}, 0)
 	bodyMap["touser"] = openId
 	bodyMap["template_id"] = templateId
 	bodyMap["topcolor"] = "#FF0000"
+	if url != "" {
+		bodyMap["url"] = url
+	}
 	dataMap := make(map[string]map[string]string, 0)
 	for field, value := range templateValue {
 		dataMap[field] = map[string]string{

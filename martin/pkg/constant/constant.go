@@ -53,4 +53,7 @@ const (
 	TemplateIdCheckWillStart = "rVykD4brIHuiZuELLkK45qdqSb6MSDQYyT1pqWDA_Mc"
 	TemplateIdCheckStart     = "vKglW8YhFsUoB-PSyzGtP-0okYCrPZlnIwByb6gpybg"
 	TemplateIdCheckAllFinish = "bIthJ8Vvf2YZ_boacnmaVw5OlBg5veqxBO9j9IY8KBE"
+	TemplateIdSubscribe      = "MyKpx941KseLOVkswCnDw0ky0iYCS6TDgE49tTdJNLg"
+	TemplateIdBeAdmin        = "ZzrMuqMZ_MGY_k3kImXwR1FZAn-GiGkz6U5GmMKbYKo"
+	TemplateIdAdmin          = "JmXePkevoOWitoBK0wMaRXwOuuydtbGHnEulKxyXoMw"
 )
