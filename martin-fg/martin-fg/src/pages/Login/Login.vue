@@ -43,7 +43,7 @@
               <a href="javascript:;">服务协议与隐私政策</a>
             </section>
           </div>
-          <button class="login-submit" @click.prevent="login()">登录</button>
+          <button class="login-submit" @click.prevent="login()">注册</button>
         </form>
         <button class="login-back" @click="$router.back()">返回</button>
       </div>

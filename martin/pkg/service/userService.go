@@ -73,7 +73,7 @@ func UserLoginService(req *model.UserReq) (int, int64, error) {
 		OpenId:      req.OpenId,
 		UserName:    req.UserName,
 		PhoneNumber: req.PhoneNumber,
-		UserGender:  req.UserGender,
+		UserGender:  constant.UserGenderMale,
 		UserPower:   constant.UserPowerNormal,
 		CreateTime:  time.Now(),
 		UpdateTime:  time.Now(),

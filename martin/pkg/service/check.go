@@ -508,7 +508,28 @@ func CheckResult(req *model.CheckResultReq) (int, error) {
 		tools.GetLogger().Debugf("service.CheckResult->dao.GetLastCheckedProjectBooking do not found finished check")
 		return constant.StatusCodeInputError, errors.New("未找到用户有效的体检信息")
 	}
-	result := &model.GuardianCheckResult{}
+	projectStr := strings.Split(bookingInfo.CheckProject, ",")
+	isProExist := false
+	for _, proStr := range projectStr {
+		proInt, _ := strconv.ParseInt(proStr, 10, 64)
+		if int(proInt) == req.CheckProject {
+			isProExist = true
+			break
+		}
+	}
+	if !isProExist {
+		tools.GetLogger().Debugf("service.CheckResult->dao.GetLastCheckedProjectBooking do not found finished check")
+		return constant.StatusCodeInputError, errors.New("用户未预约此项体检")
+	}
+	if bookingInfo.Status <= req.CheckProject {
+		tools.GetLogger().Debugf("service.CheckResult check has not check")
+		return constant.StatusCodeInputError, errors.New("用户尚未进行此项体检")
+	}
+	result, err := dao.GetCheckResultByBookingId(bookingInfo.ID, userInfo.ID)
+	if err != nil {
+		tools.GetLogger().Errorf("service.CheckResult->dao.GetCheckResultByBookingId error : %v", err)
+		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
+	}
 	switch req.CheckProject {
 	case 1:
 		result.Internal = req.CheckResult

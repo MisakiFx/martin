@@ -66,8 +66,8 @@ type GuardianCheckResult struct {
 	BookingId     int64     `gorm:"column:booking_id" json:"booking_id" form:"booking_id"`
 	Internal      string    `gorm:"column:internal" json:"internal" form:"internal"`
 	Surgery       string    `gorm:"column:surgery" json:"surgery" form:"surgery"`
-	Ent           string    `gorm:"column:ent" json:"ent" form:"ent"`
-	Sgpt          string    `gorm:"column:sgpt" json:"sgpt" form:"sgpt"`
+	Ent           string    `gorm:"column:ENT" json:"ENT" form:"ENT"`
+	Sgpt          string    `gorm:"column:SGPT" json:"SGPT" form:"SGPT"`
 	BloodGlucode  string    `gorm:"column:blood_glucode" json:"blood_glucode" form:"blood_glucode"`
 	BloodFat      string    `gorm:"column:blood_fat" json:"blood_fat" form:"blood_fat"`
 	RenalFunction string    `gorm:"column:renal_function" json:"renal_function" form:"renal_function"`

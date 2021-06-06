@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/MisakiFx/martin/martin/pkg/model"
@@ -169,7 +168,7 @@ func UpdateCheckStatus(bookingId int64, status int) error {
 func GetLastCheckedProjectBooking(userId int64, project int) (*model.GuardianBookingInfo, error) {
 	query := mysql.GetMysqlClient()
 	var bookingInfo model.GuardianBookingInfo
-	err := query.Table((&model.GuardianBookingInfo{}).TableName()).Where("user_id = ? AND status > ? AND check_project LIKE ?", userId, project, fmt.Sprintf("%%%v%%", project)).Order("start_time DESC").Limit(1).First(&bookingInfo).Error
+	err := query.Table((&model.GuardianBookingInfo{}).TableName()).Where("user_id = ?", userId).Order("start_time DESC").Limit(1).First(&bookingInfo).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return nil, nil

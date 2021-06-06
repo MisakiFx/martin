@@ -30,14 +30,6 @@ func checkUserReq(req *model.UserReq, isUpdate bool) error {
 		return errors.New("用户名超过255个字符")
 	}
 
-	if req.UserGender == 0 {
-		return errors.New("用户性别不能为空")
-	}
-
-	if req.UserGender != constant.UserGenderMale && req.UserGender != constant.UserGenderFemale {
-		return errors.New("用户性别不合法")
-	}
-
 	if !isUpdate {
 		if len(req.PhoneNumber) <= 0 {
 			return errors.New("用户电话不能为空")
