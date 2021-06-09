@@ -67,7 +67,7 @@ func CronJobDo() {
 			continue
 		}
 		//调用发送模版消息
-		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckWillStart, "http://82.156.35.184:8080/me", map[string]string{
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckWillStart, "hhttps://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2Fme&response_type=code&scope=snsapi_base&state=1#wechat_redirect", map[string]string{
 			"checkTime": afterTenMinutesTime.Format(constant.TimeFormatString2),
 		})
 		if err != nil {

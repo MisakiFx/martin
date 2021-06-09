@@ -35,7 +35,7 @@ func TestGetAccessToken(t *testing.T) {
 }
 
 func TestSendTemplateMessage(t *testing.T) {
-	err := dependencies.SendTemplateMessage("oSjQ26_7jlYQzA2b4NAWIBbF7RJ4", constant.TemplateIdCheckWillStart, "http://82.156.35.184:8080/me", map[string]string{
+	err := dependencies.SendTemplateMessage("oSjQ26_7jlYQzA2b4NAWIBbF7RJ4", constant.TemplateIdCheckWillStart, "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2Fme&response_type=code&scope=snsapi_base&state=1#wechat_redirect", map[string]string{
 		"checkTime": time.Now().Format(constant.TimeFormatString2),
 	})
 	if err != nil {

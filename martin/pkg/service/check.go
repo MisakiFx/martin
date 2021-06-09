@@ -414,7 +414,7 @@ func CheckStart(req *model.CheckStartReq) (int, error) {
 		tools.GetLogger().Errorf("service.CheckStart->dao.UpdateCheckStatus error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
-	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, "http://82.156.35.184:8080/me", map[string]string{
+	err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2Fme&response_type=code&scope=snsapi_base&state=1#wechat_redirect", map[string]string{
 		"project": model.CheckProjectMap[newStatus].Name,
 		"place":   model.CheckProjectMap[newStatus].Place,
 	})
@@ -476,9 +476,9 @@ func CheckFinish(req *model.CheckFinishReq) (int, error) {
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
 	if newStatus == constant.CheckEndStatus {
-		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckAllFinish, "http://82.156.35.184:8080/me", map[string]string{})
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckAllFinish, "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2Fme&response_type=code&scope=snsapi_base&state=1#wechat_redirect", map[string]string{})
 	} else {
-		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, "http://82.156.35.184:8080/me", map[string]string{
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckStart, "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2Fme&response_type=code&scope=snsapi_base&state=1#wechat_redirect", map[string]string{
 			"project": model.CheckProjectMap[newStatus].Name,
 			"place":   model.CheckProjectMap[newStatus].Place,
 		})
