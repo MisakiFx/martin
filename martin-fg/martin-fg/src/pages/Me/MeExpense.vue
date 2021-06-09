@@ -17,7 +17,6 @@
         </li>
       </ul>
       <div class="expense-tip">
-        <mt-spinner type="snake" :size="20" v-show="moreShowBool&&!allLoaded"></mt-spinner>
         <span v-show="allLoaded && expenses.length > 0">已全部加载</span>
       </div>
     </div>
