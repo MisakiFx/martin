@@ -8,7 +8,9 @@
         <img src="../../../static/img/introduce.png" alt="" width="100%" @click="$router.push('/introduce')">
       </div>
       <!--商品列表-->
-      <home-shop-list />
+      <div style="width: 100%">
+        <home-shop-list />
+      </div>
     </div>
 </template>
 
