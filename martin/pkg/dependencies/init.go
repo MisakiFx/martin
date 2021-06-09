@@ -19,15 +19,17 @@ func getAccessTokenInit() {
 	}
 	AccessToken = accessToken
 	tools.GetLogger().Infof("Init get accessToken success, accessToken : %v", AccessToken)
-	for {
-		<-ticker.C
-		accessToken, err := GetAccessToken()
-		if err != nil {
-			tools.GetLogger().Errorf("Init accessToken error : %v", err)
-			continue
+	go func() {
+		for {
+			<-ticker.C
+			accessToken, err := GetAccessToken()
+			if err != nil {
+				tools.GetLogger().Errorf("Init accessToken error : %v", err)
+				continue
+			}
+			AccessToken = accessToken
 		}
-		AccessToken = accessToken
-	}
+	}()
 }
 
 func Init() {
