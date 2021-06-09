@@ -1,1 +1,0 @@
-exec output/bin/martin
