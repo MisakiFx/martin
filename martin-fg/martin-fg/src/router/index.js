@@ -30,6 +30,7 @@ Vue.use(VueRouter);
 // 3. 输入路由对象
 export default new VueRouter({
   // 3.1 配置一级路由
+  mode:'history',
   routes: [
     {
       path: '/home',

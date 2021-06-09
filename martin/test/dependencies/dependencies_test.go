@@ -51,12 +51,12 @@ func TestBuildMenu(t *testing.T) {
         {
             "type":"view",
             "name":"使用介绍",
-            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F10.227.31.2%3A8080%2F%23%2Fintroduce%2F%3Fcode%3D123&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2F%23%2Fintroduce%2F&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
             "type":"view",
             "name":"体检商城",
-            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F10.227.31.2%3A8080%2F%23%2Fhome%2F%3Fcode%3D123&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+            "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2F%23%2Fhome%2F&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
         },
         {
             "name":"个人中心",
@@ -64,7 +64,7 @@ func TestBuildMenu(t *testing.T) {
                 {
                     "type":"view",
                     "name":"个人信息",
-                    "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F10.227.31.2%3A8080%2F%23%2Fme%2F%3Fcode%3D123&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+                    "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2F%23%2Fme%2F&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
                 },
                 {
                     "type":"view",
