@@ -69,7 +69,7 @@ func TestBuildMenu(t *testing.T) {
                 {
                     "type":"view",
                     "name":"体检预约",
-                    "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F10.227.31.2%3A8080%2Fcheck_booking&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
+                    "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx33cc6387acefe650&redirect_uri=http%3A%2F%2F82.156.35.184%3A8080%2Fcheck_booking&response_type=code&scope=snsapi_base&state=1#wechat_redirect"
                 }
             ]
         }
