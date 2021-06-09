@@ -47,6 +47,7 @@
     background-color: #f5f5f5
     .check-list
       .check-list-item
+        width 100%
         margin-bottom 10px
         background-color: #fff
         display flex

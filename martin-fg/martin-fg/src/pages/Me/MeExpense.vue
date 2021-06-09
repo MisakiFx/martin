@@ -1,6 +1,6 @@
 <template>
     <div class="expense-container">
-      <div class="expenses-empty" v-show="expenses.length === 0">无体检信息</div>
+      <div class="expenses-empty" v-show="expenses.length === 0">无消费记录</div>
       <ul class="expense-list"
           v-infinite-scroll="scrollMore"
           infinite-scroll-disabled="moreShowBool"

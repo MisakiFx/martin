@@ -67,7 +67,7 @@ func CronJobDo() {
 			continue
 		}
 		//调用发送模版消息
-		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckWillStart, "http://10.227.31.2:8080/#/me?code=123", map[string]string{
+		err = dependencies.SendTemplateMessage(userInfo.OpenId, constant.TemplateIdCheckWillStart, "http://82.156.35.184:8080/me", map[string]string{
 			"checkTime": afterTenMinutesTime.Format(constant.TimeFormatString2),
 		})
 		if err != nil {
