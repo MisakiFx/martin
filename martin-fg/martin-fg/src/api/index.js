@@ -1,6 +1,6 @@
 import ajax from './ajax'
 
-const BASE_URL= 'http://127.0.0.1:7090/guardian/api'
+const BASE_URL= 'http://10.227.31.2:7090/guardian/api'
 
 //获取用户信息
 export const getUserInfo = (openId = '')=>ajax(BASE_URL + '/user/info', {}, {'open_id':openId})
