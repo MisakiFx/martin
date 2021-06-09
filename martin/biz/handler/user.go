@@ -170,6 +170,7 @@ func GetUserOpenIdByCode(c *gin.Context) {
 		})
 		return
 	}
+	tools.GetLogger().Infof("openId : %v", openId)
 	c.JSON(http.StatusOK, gin.H{
 		"code": constant.StatusCodeSuccess,
 		"msg":  constant.StatusCodeMessageMap[constant.StatusCodeSuccess],

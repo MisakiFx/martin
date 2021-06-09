@@ -15,7 +15,7 @@
       },
       methods:{
         async syncGetUserInfo(){
-          //await this.$store.dispatch('reqUserOpenId', this.$route.query.code)
+          await this.$store.dispatch('reqUserOpenId', this.$route.query.code)
           await this.$store.dispatch('reqUserInfo', this.$store.state.userOpenId)
           if(!this.$store.state.userInfo.open_id) {
             await this.$router.replace("/me")
