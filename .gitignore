@@ -1,5 +1,6 @@
 .DS_Store
 martin-fg/martin-fg/node_modules/
+martin/output
 /dist/
 npm-debug.log*
 yarn-debug.log*
