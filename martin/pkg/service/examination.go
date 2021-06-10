@@ -27,6 +27,15 @@ func BuyExaminationService(req *model.BuyExaminationReq, openId string) (int, er
 		tools.GetLogger().Errorf("service.BuyExaminationService->dao.GetUserExamination error : %v", err)
 		return constant.StatusCodeServiceError, errors.New(constant.StatusCodeMessageMap[constant.StatusCodeServiceError])
 	}
+	if req.ExaminationId == 1 || req.ExaminationId == 2 || req.ExaminationId == 3 || req.ExaminationId == 4 {
+		if examinationOld.UserRemainder >= constant.MaxExaminationRemainder {
+			return constant.StatusCodeInputError, errors.New("用户余额已达最大值")
+		}
+	} else {
+		if examinationOld.UserCheckCount >= constant.MaxExaminationCheckCount {
+			return constant.StatusCodeInputError, errors.New("用户全套体检次数已达最大值")
+		}
+	}
 
 	tx := dao.StartTransaction()
 	defer dao.ShutDownTransaction(tx)
